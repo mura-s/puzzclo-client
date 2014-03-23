@@ -41,7 +41,7 @@ class ClockPanel extends JPanel {
 	}
 
 	/**
-	 * 時計を作成し、時刻表示のスレッドを動かし始める
+	 * 時計を作成し、時刻表示のスレッドを動かし始める。
 	 * 
 	 * @return
 	 */
@@ -69,7 +69,7 @@ class ClockPanel extends JPanel {
 		final DateFormat df = new SimpleDateFormat("HH:mm:ss");
 
 		/**
-		 * 1秒毎に時計の時間を更新する
+		 * 1秒毎に時計の時間を更新する。
 		 */
 		@Override
 		public void run() {
@@ -85,7 +85,7 @@ class ClockPanel extends JPanel {
 		}
 
 		/**
-		 * 時計を描画する
+		 * 時計を描画する。
 		 */
 		@Override
 		protected void paintComponent(Graphics g) {

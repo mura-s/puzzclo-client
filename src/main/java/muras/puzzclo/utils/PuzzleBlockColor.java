@@ -12,31 +12,21 @@ import javax.swing.ImageIcon;
  * 
  */
 public enum PuzzleBlockColor {
-	BLUE(new ImageIcon("./img/blue.png")),
-	GREEN(new ImageIcon("./img/green.png")),
-	PINK(new ImageIcon("./img/pink.png")),
-	PURPLE(new ImageIcon("./img/purple.png")),
-	RED(new ImageIcon("./img/red.png")),
-	YELLOW(new ImageIcon("./img/yellow.png"));
-	
-	private PuzzleBlockColor(ImageIcon block) {
-		this.block = block;
-	}
-	
-	// パズルのブロックのアイコン
-	private ImageIcon block;
-	
+	BLUE, GREEN, PINK, PURPLE, RED, YELLOW;
+
 	/**
-	 * 各色に対応するパズルのブロック(ImageIcon)を取得する
+	 * 各色に対応するパズルのブロック(ImageIcon)を取得する。
 	 * 
 	 * @return 対応するパズルのブロック
 	 */
 	public ImageIcon getBlock() {
-		return block;
+		// jarにしても画像を表示できるように、ClassLoaderで読み込む
+		ClassLoader cl = this.getClass().getClassLoader();
+		return new ImageIcon(cl.getResource(name().toLowerCase() + ".png"));
 	}
-	
+
 	/**
-	 * PuzzleBlockColorsの中からランダムな色を返す
+	 * PuzzleBlockColorsの中からランダムな色を返す。
 	 * 
 	 * @return ランダムな色
 	 */
@@ -46,7 +36,7 @@ public enum PuzzleBlockColor {
 	}
 
 	/**
-	 * PuzzleBlockColorsの要素数を返す
+	 * PuzzleBlockColorsの要素数を返す。
 	 * 
 	 * @return PuzzleBlockColorsの要素数
 	 */
