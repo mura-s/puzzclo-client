@@ -14,7 +14,7 @@ import javax.swing.JTextArea;
 import javax.swing.JTextField;
 import javax.swing.border.LineBorder;
 
-import static muras.puzzclo.utils.ComponentSizes.*;
+import static muras.puzzclo.utils.ComponentSize.*;
 
 /**
  * ユーザが操作を行うためのパネル
@@ -48,7 +48,7 @@ class ControlPanel extends JPanel {
 		private static final long serialVersionUID = 1L;
 
 		// 名称部分のラベル
-		private final JLabel nameLabel = new NameLabel("message");
+		private final JLabel nameLabel = new NameLabel("メッセージ");
 		// メッセージ出力部分のパネル
 		private final JTextArea messageArea = createMessageArea();
 
@@ -81,7 +81,7 @@ class ControlPanel extends JPanel {
 		private static final long serialVersionUID = 1L;
 
 		// 名称部分のラベル
-		private final JLabel nameLabel = new NameLabel("input");
+		private final JLabel nameLabel = new NameLabel("入力");
 		// 入力部分のフィールド
 		private final JTextField inputField = createInputField();
 		// 決定用ボタン

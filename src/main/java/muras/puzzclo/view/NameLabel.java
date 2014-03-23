@@ -6,7 +6,7 @@ package muras.puzzclo.view;
 import java.awt.Dimension;
 import javax.swing.JLabel;
 
-import static muras.puzzclo.utils.ComponentSizes.*;
+import static muras.puzzclo.utils.ComponentSize.*;
 
 /**
  * パネルに配置する名称のラベル

@@ -9,7 +9,7 @@ package muras.puzzclo.utils;
  * @author muramatsu
  * 
  */
-public class ComponentSizes {
+public class ComponentSize {
 	/**
 	 * フレームのx座標
 	 */
@@ -21,29 +21,16 @@ public class ComponentSizes {
 	/**
 	 * フレームのwidth
 	 */
-	public static final int FRAME_WIDTH = 800;
+	public static final int FRAME_WIDTH = 880;
 	/**
 	 * フレームのheight
 	 */
-	public static final int FRAME_HEIGHT = 430;
+	public static final int FRAME_HEIGHT = 470;
 
 	/**
-	 * 各種パネルのwidth
+	 * パネルのwidth
 	 */
-	public static final int PANEL_WIDTH = 360;
-
-	/**
-	 * 時計のwidth
-	 */
-	public static final int CLOCK_WIDTH = PANEL_WIDTH;
-	/**
-	 * 時計のheight
-	 */
-	public static final int CLOCK_HEIGHT = 100;
-	/**
-	 * 時計のfontsize
-	 */
-	public static final int CLOCK_FONTSIZE = 60;
+	public static final int PANEL_WIDTH = 402;
 
 	/**
 	 * パズルのwidth
@@ -62,6 +49,21 @@ public class ComponentSizes {
 	 */
 	public static final int PUZZLE_NUM_COLS = 6;
 
+
+	/**
+	 * 時計のwidth
+	 */
+	public static final int CLOCK_WIDTH = PANEL_WIDTH;
+	/**
+	 * 時計のheight
+	 */
+	public static final int CLOCK_HEIGHT = 120;
+	/**
+	 * 時計のfontsize
+	 */
+	public static final int CLOCK_FONTSIZE = 70;
+
+
 	/**
 	 * メッセージエリアのwidth
 	 */
@@ -69,12 +71,12 @@ public class ComponentSizes {
 	/**
 	 * メッセージエリアのheight
 	 */
-	public static final int MESSAGE_HEIGHT = 140;
-	
+	public static final int MESSAGE_HEIGHT = 160;
+
 	/**
 	 * 入力用フィールドのwidth
 	 */
-	public static final int INPUT_WIDTH = 300;
+	public static final int INPUT_WIDTH = 330;
 	/**
 	 * 入力用フィールドのheight
 	 */
@@ -83,7 +85,7 @@ public class ComponentSizes {
 	/**
 	 * 決定用ボタンのwidth
 	 */
-	public static final int BUTTON_WIDTH = 60;
+	public static final int BUTTON_WIDTH = 70;
 	/**
 	 * 決定用ボタンのheight
 	 */
@@ -101,7 +103,7 @@ public class ComponentSizes {
 	/**
 	 * オブジェクト化を禁止
 	 */
-	private ComponentSizes() {
+	private ComponentSize() {
 	}
 
 }

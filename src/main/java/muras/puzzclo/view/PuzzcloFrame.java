@@ -3,14 +3,13 @@
  */
 package muras.puzzclo.view;
 
-import java.awt.FlowLayout;
+import static muras.puzzclo.utils.ComponentSize.*;
+
 import java.awt.GridLayout;
 
 import javax.swing.BoxLayout;
 import javax.swing.JFrame;
 import javax.swing.JPanel;
-
-import static muras.puzzclo.utils.ComponentSizes.*;
 
 /**
  * クライアントフレーム全体
@@ -21,7 +20,7 @@ import static muras.puzzclo.utils.ComponentSizes.*;
 public final class PuzzcloFrame extends JFrame {
 	private static final long serialVersionUID = 1L;
 
-	private final String name = "Puzzle and Clocks";
+	private final String name = "パズクロ！ (Puzzle & Clocks)";
 
 	// 操作部のパネル
 	private final JPanel controlPanel = new ControlPanel();

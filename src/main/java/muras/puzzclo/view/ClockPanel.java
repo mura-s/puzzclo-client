@@ -16,7 +16,7 @@ import javax.swing.JLabel;
 import javax.swing.JPanel;
 import javax.swing.border.LineBorder;
 
-import static muras.puzzclo.utils.ComponentSizes.*;
+import static muras.puzzclo.utils.ComponentSize.*;
 
 /**
  * 時計部分のパネル
@@ -28,7 +28,7 @@ class ClockPanel extends JPanel {
 	private static final long serialVersionUID = 1L;
 
 	// 名称部分のラベル
-	private final JLabel nameLabel = new NameLabel("clock");
+	private final JLabel nameLabel = new NameLabel("時計");
 	// 時計部分のパネル
 	private final Clock clock = createClock();
 
@@ -65,7 +65,7 @@ class ClockPanel extends JPanel {
 	private static class Clock extends JPanel implements Runnable {
 		private static final long serialVersionUID = 1L;
 
-		String time = "";
+		String time;
 		final DateFormat df = new SimpleDateFormat("HH:mm:ss");
 
 		/**
