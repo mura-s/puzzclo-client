@@ -3,6 +3,9 @@
  */
 package muras.puzzclo.view;
 
+import java.awt.FlowLayout;
+import java.awt.GridLayout;
+
 import javax.swing.BoxLayout;
 import javax.swing.JFrame;
 import javax.swing.JPanel;
@@ -17,7 +20,7 @@ import static muras.puzzclo.utils.ComponentSizes.*;
  */
 public final class PuzzcloFrame extends JFrame {
 	private static final long serialVersionUID = 1L;
-	
+
 	private final String name = "Puzzle and Clocks";
 
 	// 操作部のパネル
@@ -36,13 +39,16 @@ public final class PuzzcloFrame extends JFrame {
 		setBounds(FRAME_XPOS, FRAME_YPOS, FRAME_WIDTH, FRAME_HEIGHT);
 		setResizable(false);
 
-		BoxLayout boxlayout = new BoxLayout(this.getContentPane(),
-				BoxLayout.Y_AXIS);
-		setLayout(boxlayout);
-
-		add(controlPanel);
-		add(clockPanel);
+		// レイアウト作成
+		setLayout(new GridLayout(1, 2));
+		// 左側
 		add(puzzlePanel);
+		// 右側(panelに載せる)
+		JPanel rightPanel = new JPanel();
+		add(rightPanel);
+		rightPanel.setLayout(new BoxLayout(rightPanel, BoxLayout.Y_AXIS));
+		rightPanel.add(clockPanel);
+		rightPanel.add(controlPanel);
 	}
 
 }

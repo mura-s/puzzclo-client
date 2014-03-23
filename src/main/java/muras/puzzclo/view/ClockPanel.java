@@ -49,6 +49,7 @@ class ClockPanel extends JPanel {
 		final Clock clock = new Clock();
 		clock.setPreferredSize(new Dimension(CLOCK_WIDTH, CLOCK_HEIGHT));
 		clock.setBorder(new LineBorder(Color.DARK_GRAY));
+		clock.setBackground(Color.WHITE);
 
 		new Thread(clock).start();
 

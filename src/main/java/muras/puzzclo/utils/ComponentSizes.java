@@ -21,16 +21,16 @@ public class ComponentSizes {
 	/**
 	 * フレームのwidth
 	 */
-	public static final int FRAME_WIDTH = 500;
+	public static final int FRAME_WIDTH = 800;
 	/**
 	 * フレームのheight
 	 */
-	public static final int FRAME_HEIGHT = 800;
+	public static final int FRAME_HEIGHT = 430;
 
 	/**
 	 * 各種パネルのwidth
 	 */
-	public static final int PANEL_WIDTH = 400;
+	public static final int PANEL_WIDTH = 360;
 
 	/**
 	 * 時計のwidth
@@ -39,11 +39,11 @@ public class ComponentSizes {
 	/**
 	 * 時計のheight
 	 */
-	public static final int CLOCK_HEIGHT = 150;
+	public static final int CLOCK_HEIGHT = 100;
 	/**
 	 * 時計のfontsize
 	 */
-	public static final int CLOCK_FONTSIZE = 70;
+	public static final int CLOCK_FONTSIZE = 60;
 
 	/**
 	 * パズルのwidth
@@ -52,7 +52,7 @@ public class ComponentSizes {
 	/**
 	 * パズルのheight
 	 */
-	public static final int PUZZLE_HEIGHT = 360;
+	public static final int PUZZLE_HEIGHT = PUZZLE_WIDTH;
 	/**
 	 * パズルの行の数
 	 */
@@ -69,21 +69,21 @@ public class ComponentSizes {
 	/**
 	 * メッセージエリアのheight
 	 */
-	public static final int MESSAGE_HEIGHT = 100;
+	public static final int MESSAGE_HEIGHT = 140;
 	
 	/**
 	 * 入力用フィールドのwidth
 	 */
-	public static final int INPUT_WIDTH = 330;
+	public static final int INPUT_WIDTH = 300;
 	/**
 	 * 入力用フィールドのheight
 	 */
-	public static final int INPUT_HEIGHT = 25;
+	public static final int INPUT_HEIGHT = 30;
 
 	/**
 	 * 決定用ボタンのwidth
 	 */
-	public static final int BUTTON_WIDTH = 70;
+	public static final int BUTTON_WIDTH = 60;
 	/**
 	 * 決定用ボタンのheight
 	 */

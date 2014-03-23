@@ -66,6 +66,7 @@ class ControlPanel extends JPanel {
 			messageArea.setPreferredSize(new Dimension(MESSAGE_WIDTH,
 					MESSAGE_HEIGHT));
 			messageArea.setBorder(new LineBorder(Color.DARK_GRAY));
+			messageArea.setEditable(false);
 			return messageArea;
 		}
 	}
@@ -84,7 +85,7 @@ class ControlPanel extends JPanel {
 		// 入力部分のフィールド
 		private final JTextField inputField = createInputField();
 		// 決定用ボタン
-		private final JButton submitButton = createSubmitButton("ok");
+		private final JButton submitButton = createSubmitButton("send");
 
 		/**
 		 * コンストラクタ
