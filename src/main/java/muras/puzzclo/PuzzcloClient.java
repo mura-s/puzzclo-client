@@ -16,7 +16,7 @@ import muras.puzzclo.view.PuzzcloFrame;
 public class PuzzcloClient {
 
 	public static void main(String[] args) {
-		final JFrame puzzcloFrame = new PuzzcloFrame();
+		JFrame puzzcloFrame = new PuzzcloFrame();
 		puzzcloFrame.setVisible(true);
 	}
 

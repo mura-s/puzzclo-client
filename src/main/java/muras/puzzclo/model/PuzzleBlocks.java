@@ -22,7 +22,7 @@ public final class PuzzleBlocks {
 	// パズル用のテーブルモデル(PUZZLE_NUM_ROWS行分確保)
 	// ブロックの配置を保持
 	private final DefaultTableModel tableModel = new PuzzleTableModel(
-			new String[PUZZLE_NUM_ROWS], 0);
+			new String[PUZZLE_CELLNUM_OF_SIDE], 0);
 
 	/**
 	 * パズル用のテーブルモデルのゲッター
@@ -37,7 +37,7 @@ public final class PuzzleBlocks {
 	 * パズルテーブル上にブロックを配置する。
 	 */
 	public void arragePuzzleBlocks() {
-		final ImageIcon[][] tmpBlocks = new ImageIcon[PUZZLE_NUM_ROWS][PUZZLE_NUM_COLS];
+		final ImageIcon[][] tmpBlocks = new ImageIcon[PUZZLE_CELLNUM_OF_SIDE][PUZZLE_CELLNUM_OF_SIDE];
 
 		for (ImageIcon[] blockRow : tmpBlocks) {
 			// セルにアイコンを代入するために通常のfor文を使用
@@ -51,21 +51,27 @@ public final class PuzzleBlocks {
 			tableModel.addRow(blockRow);
 		}
 	}
-	
+
 	/**
 	 * 2つのブロックの配置を入れ替える。
 	 * 
-	 * @param srcRow 入れ替え元のセルの行
-	 * @param srcCol 入れ替え元のセルの列
-	 * @param dstRow 入れ替え先のセルの行
-	 * @param dstCol 入れ替え先のセルの行
+	 * @param srcRow
+	 *            入れ替え元のセルの行
+	 * @param srcCol
+	 *            入れ替え元のセルの列
+	 * @param dstRow
+	 *            入れ替え先のセルの行
+	 * @param dstCol
+	 *            入れ替え先のセルの行
 	 */
 	public void swap(int srcRow, int srcCol, int dstRow, int dstCol) {
 
-		boolean invalidSrcIndex = srcRow < 0 || PUZZLE_NUM_ROWS <= srcRow
-				|| srcCol < 0 || PUZZLE_NUM_COLS <= srcCol;
-		boolean invalidDstIndex = dstRow < 0 || PUZZLE_NUM_ROWS <= dstRow
-				|| dstCol < 0 || PUZZLE_NUM_COLS <= dstCol;
+		boolean invalidSrcIndex = srcRow < 0
+				|| PUZZLE_CELLNUM_OF_SIDE <= srcRow || srcCol < 0
+				|| PUZZLE_CELLNUM_OF_SIDE <= srcCol;
+		boolean invalidDstIndex = dstRow < 0
+				|| PUZZLE_CELLNUM_OF_SIDE <= dstRow || dstCol < 0
+				|| PUZZLE_CELLNUM_OF_SIDE <= dstCol;
 
 		if (invalidSrcIndex || invalidDstIndex) {
 			throw new IndexOutOfBoundsException("引数のセルが範囲外です。");

@@ -93,10 +93,10 @@ class ClockPanel extends JPanel {
 			g.setFont(new Font(Font.SANS_SERIF, Font.BOLD, CLOCK_FONTSIZE));
 
 			// パネルの真ん中に時計を表示
-			final FontMetrics fm = g.getFontMetrics();
-			final int xPos = (getWidth() - fm.stringWidth(time)) / 2;
-			final int yPos = (getHeight() + fm.getAscent() - fm.getDescent()) / 2;
-			g.drawString(time, xPos, yPos);
+			FontMetrics fm = g.getFontMetrics();
+			int x = (getWidth() - fm.stringWidth(time)) / 2;
+			int y = (getHeight() + fm.getAscent() - fm.getDescent()) / 2;
+			g.drawString(time, x, y);
 		}
 	}
 

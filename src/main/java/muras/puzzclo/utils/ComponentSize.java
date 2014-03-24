@@ -33,25 +33,15 @@ public class ComponentSize {
 	public static final int PANEL_WIDTH = 402;
 
 	/**
-	 * パズルのwidth <br />
-	 * 
-	 * 6で割り切れる数にする。また、パズルの幅と高さは等しい。
+	 * パズルの辺の長さ。 <br />
+	 * パズルの幅と高さは等しい。また、6で割り切れる数にする。
 	 */
-	public static final int PUZZLE_WIDTH = PANEL_WIDTH;
-	/**
-	 * パズルのheight <br />
-	 * 
-	 * 6で割り切れる数にする。また、パズルの幅と高さは等しい。
-	 */
-	public static final int PUZZLE_HEIGHT = PUZZLE_WIDTH;
+	public static final int PUZZLE_SIZE_LENGTH = PANEL_WIDTH;
+
 	/**
 	 * パズルの行の数
 	 */
-	public static final int PUZZLE_NUM_ROWS = 6;
-	/**
-	 * パズルの列の数
-	 */
-	public static final int PUZZLE_NUM_COLS = 6;
+	public static final int PUZZLE_CELLNUM_OF_SIDE = 6;
 
 	/**
 	 * 時計のwidth
@@ -119,14 +109,14 @@ public class ComponentSize {
 	 *             posがパズルの外の場合 (pos < 0 || PUZZLE_WIDTH < pos)
 	 */
 	public static int getCellNumFromPositon(int pos) {
-		if (pos < 0 || PUZZLE_WIDTH < pos) {
-			throw new IllegalArgumentException("座標が0以上" + PUZZLE_WIDTH
+		if (pos < 0 || PUZZLE_SIZE_LENGTH < pos) {
+			throw new IllegalArgumentException("座標が0以上" + PUZZLE_SIZE_LENGTH
 					+ "以下ではありません。渡された座標: " + pos);
 		}
 
-		int cellSize = PUZZLE_WIDTH / PUZZLE_NUM_COLS;
+		int cellSize = PUZZLE_SIZE_LENGTH / PUZZLE_CELLNUM_OF_SIDE;
 		// 境界値も範囲内にする
-		int cellNum = (pos == PUZZLE_WIDTH) ? (PUZZLE_NUM_COLS - 1)
+		int cellNum = (pos == PUZZLE_SIZE_LENGTH) ? (PUZZLE_CELLNUM_OF_SIDE - 1)
 				: (pos / cellSize);
 
 		return cellNum;

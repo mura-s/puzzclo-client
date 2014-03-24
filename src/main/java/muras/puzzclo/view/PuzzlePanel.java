@@ -60,12 +60,12 @@ class PuzzlePanel extends JPanel {
 	}
 
 	private JTable createPuzzleTable() {
-		final JTable puzzleTable = new PuzzleTable(puzzleBlocks.getTableModel());
+		JTable puzzleTable = new PuzzleTable(puzzleBlocks.getTableModel());
 
 		// サイズの設定
 		puzzleTable
-				.setPreferredSize(new Dimension(PUZZLE_WIDTH, PUZZLE_HEIGHT));
-		puzzleTable.setRowHeight(PUZZLE_HEIGHT / PUZZLE_NUM_ROWS);
+				.setPreferredSize(new Dimension(PUZZLE_SIZE_LENGTH, PUZZLE_SIZE_LENGTH));
+		puzzleTable.setRowHeight(PUZZLE_SIZE_LENGTH / PUZZLE_CELLNUM_OF_SIDE);
 		// 枠の色の設定
 		puzzleTable.setBorder(new LineBorder(Color.DARK_GRAY));
 		puzzleTable.setGridColor(Color.LIGHT_GRAY);
@@ -78,7 +78,7 @@ class PuzzlePanel extends JPanel {
 		puzzleTable.setCellSelectionEnabled(false);
 		puzzleTable.setRowSelectionAllowed(false);
 
-		final PuzzleDragListener dragListener = new PuzzleDragListener();
+		PuzzleDragListener dragListener = new PuzzleDragListener();
 		// マウスクリックの設定
 		puzzleTable.addMouseListener(dragListener);
 		// ドラッグアンドドロップの設定
@@ -118,7 +118,7 @@ class PuzzlePanel extends JPanel {
 		@Override
 		public Component prepareRenderer(TableCellRenderer tcr, int row,
 				int column) {
-			final Component c = super.prepareRenderer(tcr, row, column);
+			Component c = super.prepareRenderer(tcr, row, column);
 
 			if (row == selectedRow && column == selectedCol) {
 				// 選択されている場合
@@ -182,8 +182,8 @@ class PuzzlePanel extends JPanel {
 			final int x = e.getPoint().x;
 			final int y = e.getPoint().y;
 
-			boolean outOfPuzzleTable = x < 0 || x > PUZZLE_WIDTH || y < 0
-					|| y > PUZZLE_HEIGHT;
+			boolean outOfPuzzleTable = x < 0 || x > PUZZLE_SIZE_LENGTH || y < 0
+					|| y > PUZZLE_SIZE_LENGTH;
 			if (outOfPuzzleTable) {
 				setCellSelection(NOT_SELECTED, NOT_SELECTED);
 				cancelTimerTask();

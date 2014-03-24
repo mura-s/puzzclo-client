@@ -62,7 +62,7 @@ class ControlPanel extends JPanel {
 		}
 
 		private JTextArea createMessageArea() {
-			final JTextArea messageArea = new JTextArea();
+			JTextArea messageArea = new JTextArea();
 			messageArea.setPreferredSize(new Dimension(MESSAGE_WIDTH,
 					MESSAGE_HEIGHT));
 			messageArea.setBorder(new LineBorder(Color.DARK_GRAY));
@@ -98,7 +98,7 @@ class ControlPanel extends JPanel {
 		}
 
 		private JTextField createInputField() {
-			final JTextField inputField = new JTextField();
+			JTextField inputField = new JTextField();
 			inputField
 					.setPreferredSize(new Dimension(INPUT_WIDTH, INPUT_HEIGHT));
 
@@ -106,7 +106,7 @@ class ControlPanel extends JPanel {
 		}
 
 		private JButton createSubmitButton(String text) {
-			final JButton submitButton = new JButton(text);
+			JButton submitButton = new JButton(text);
 			submitButton.setPreferredSize(new Dimension(BUTTON_WIDTH,
 					BUTTON_HEIGHT));
 			return submitButton;
