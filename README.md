@@ -1,4 +1,6 @@
 puzzclo-client
 ==============
 
-client code of puzzle and clock game
+Puzzle and Clockゲームのクライアントコード。
+
+target/puzzclo-client.jarから起動します。

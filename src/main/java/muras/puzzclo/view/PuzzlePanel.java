@@ -14,7 +14,6 @@ import java.awt.event.MouseMotionListener;
 import java.util.Timer;
 import java.util.TimerTask;
 
-import javax.swing.ImageIcon;
 import javax.swing.JLabel;
 import javax.swing.JPanel;
 import javax.swing.JTable;
@@ -22,7 +21,7 @@ import javax.swing.border.LineBorder;
 import javax.swing.table.DefaultTableModel;
 import javax.swing.table.TableCellRenderer;
 
-import muras.puzzclo.utils.PuzzleBlockColor;
+import muras.puzzclo.model.PuzzleBlocks;
 
 /**
  * パズル部分のパネル
@@ -36,13 +35,11 @@ class PuzzlePanel extends JPanel {
 	// 名称部分のラベル
 	private final JLabel nameLabel = new NameLabel("パズル");
 
-	// パズルテーブル上のブロックの配置。配列の一次元目が行、二次元目が列。
-	private final ImageIcon[][] puzzleBlocks = createPuzzleBlocks();
-	// パズル用のテーブルモデル(PUZZLE_NUM_ROWS行分確保)
-	private final DefaultTableModel tableModel = new PuzzleTableModel(
-			new String[PUZZLE_NUM_ROWS], 0);
+	// パズル内のブロックとその処理
+	private final PuzzleBlocks puzzleBlocks = new PuzzleBlocks();
+
 	// パズル用のテーブル
-	final JTable puzzleTable = createPuzzleTable();
+	private final JTable puzzleTable = createPuzzleTable();
 
 	// セルが選択されていない状態
 	private final int NOT_SELECTED = -1;
@@ -55,28 +52,15 @@ class PuzzlePanel extends JPanel {
 	 * コンストラクタ
 	 */
 	PuzzlePanel() {
-		arragePuzzleBlocks();
+		puzzleBlocks.arragePuzzleBlocks();
 		setDragAndDrop();
 
 		add(nameLabel);
 		add(puzzleTable);
 	}
 
-	private ImageIcon[][] createPuzzleBlocks() {
-		final ImageIcon[][] puzzleBlocks = new ImageIcon[PUZZLE_NUM_ROWS][PUZZLE_NUM_COLS];
-
-		for (ImageIcon[] blockRow : puzzleBlocks) {
-			// セルにアイコンを代入するために通常のfor文を使用
-			for (int i = 0; i < blockRow.length; i++) {
-				blockRow[i] = PuzzleBlockColor.getRandomColor().getBlock();
-			}
-		}
-
-		return puzzleBlocks;
-	}
-
 	private JTable createPuzzleTable() {
-		final JTable puzzleTable = new PuzzleTable(tableModel);
+		final JTable puzzleTable = new PuzzleTable(puzzleBlocks.getTableModel());
 
 		// サイズの設定
 		puzzleTable
@@ -87,12 +71,6 @@ class PuzzlePanel extends JPanel {
 		puzzleTable.setGridColor(Color.LIGHT_GRAY);
 
 		return puzzleTable;
-	}
-
-	private void arragePuzzleBlocks() {
-		for (ImageIcon[] blockRow : puzzleBlocks) {
-			tableModel.addRow(blockRow);
-		}
 	}
 
 	private void setDragAndDrop() {
@@ -111,40 +89,6 @@ class PuzzlePanel extends JPanel {
 		selectedRow = row;
 		selectedCol = col;
 		puzzleTable.repaint();
-	}
-
-	/**
-	 * パズルのテーブルにオブジェクトを格納するための定義を行うクラス
-	 * 
-	 * @author muramatsu
-	 * 
-	 */
-	private static class PuzzleTableModel extends DefaultTableModel {
-		private static final long serialVersionUID = 1L;
-
-		PuzzleTableModel(String[] columnNames, int rowNum) {
-			super(columnNames, rowNum);
-		}
-
-		/**
-		 * アイコンを表示するために、 格納されているオブジェクトの本当のクラスを返すようにする。
-		 * 
-		 * @return 格納されているオブジェクトのクラス
-		 */
-		@Override
-		public Class<?> getColumnClass(int col) {
-			return getValueAt(0, col).getClass();
-		}
-
-		/**
-		 * テーブルを編集不可にする。
-		 * 
-		 * @return false
-		 */
-		@Override
-		public boolean isCellEditable(int row, int column) {
-			return false;
-		}
 	}
 
 	/**
@@ -174,7 +118,7 @@ class PuzzlePanel extends JPanel {
 		@Override
 		public Component prepareRenderer(TableCellRenderer tcr, int row,
 				int column) {
-			Component c = super.prepareRenderer(tcr, row, column);
+			final Component c = super.prepareRenderer(tcr, row, column);
 
 			if (row == selectedRow && column == selectedCol) {
 				// 選択されている場合
@@ -200,6 +144,10 @@ class PuzzlePanel extends JPanel {
 	private class PuzzleDragListener extends MouseAdapter implements
 			MouseMotionListener {
 
+		// ドラッグの時間制限用のタイマー
+		private final Timer timer = new Timer();
+		private TimerTask task;
+
 		/**
 		 * マウスが押されたら、その位置を設定し、選択状態にする。<br />
 		 * また、4秒後にドラッグ状態を自動で解除する。
@@ -218,6 +166,7 @@ class PuzzlePanel extends JPanel {
 		@Override
 		public void mouseReleased(MouseEvent e) {
 			setCellSelection(NOT_SELECTED, NOT_SELECTED);
+			cancelTimerTask();
 		}
 
 		/**
@@ -230,36 +179,31 @@ class PuzzlePanel extends JPanel {
 				return;
 			}
 
-			int x = e.getPoint().x;
-			int y = e.getPoint().y;
+			final int x = e.getPoint().x;
+			final int y = e.getPoint().y;
 
 			boolean outOfPuzzleTable = x < 0 || x > PUZZLE_WIDTH || y < 0
 					|| y > PUZZLE_HEIGHT;
 			if (outOfPuzzleTable) {
 				setCellSelection(NOT_SELECTED, NOT_SELECTED);
-				e.consume();
+				cancelTimerTask();
 				return;
 			}
 
-			int dstRow = getCellNumFromPositon(y);
-			int dstCol = getCellNumFromPositon(x);
+			final int dstRow = getCellNumFromPositon(y);
+			final int dstCol = getCellNumFromPositon(x);
 
 			// パズルブロックを入れ替える
-			swap(selectedRow, selectedCol, dstRow, dstCol);
+			puzzleBlocks.swap(selectedRow, selectedCol, dstRow, dstCol);
 			// 入れ替わった先を選択状態にする
 			setCellSelection(dstRow, dstCol);
 		}
 
-		@Override
-		public void mouseMoved(MouseEvent e) {
-		}
-
 		/**
-		 * 4秒後にセルの選択を解除する。
+		 * 4秒後にセルの選択を解除するように、タイマーを起動する。
 		 */
 		private void deselectCellAfter4Sec() {
-			Timer timer = new Timer();
-			TimerTask task = new TimerTask() {
+			task = new TimerTask() {
 				@Override
 				public void run() {
 					setCellSelection(NOT_SELECTED, NOT_SELECTED);
@@ -268,25 +212,14 @@ class PuzzlePanel extends JPanel {
 			timer.schedule(task, 4000);
 		}
 
-		private void swap(int srcRow, int srcCol, int dstRow, int dstCol) {
-
-			boolean invalidSrcIndex = srcRow < 0 || PUZZLE_NUM_ROWS <= srcRow
-					|| srcCol < 0 || PUZZLE_NUM_COLS <= srcCol;
-			boolean invalidDstIndex = dstRow < 0 || PUZZLE_NUM_ROWS <= dstRow
-					|| dstCol < 0 || PUZZLE_NUM_COLS <= dstCol;
-
-			if (invalidSrcIndex || invalidDstIndex) {
-				throw new IndexOutOfBoundsException("引数が範囲外です。");
+		private void cancelTimerTask() {
+			if (task != null) {
+				task.cancel();
 			}
+		}
 
-			// 保持しているパズルブロックを変更
-			ImageIcon temp = puzzleBlocks[srcRow][srcCol];
-			puzzleBlocks[srcRow][srcCol] = puzzleBlocks[dstRow][dstCol];
-			puzzleBlocks[dstRow][dstCol] = temp;
-
-			// 画面の表示を変更
-			tableModel.setValueAt(puzzleBlocks[srcRow][srcCol], srcRow, srcCol);
-			tableModel.setValueAt(puzzleBlocks[dstRow][dstCol], dstRow, dstCol);
+		@Override
+		public void mouseMoved(MouseEvent e) {
 		}
 
 	}
