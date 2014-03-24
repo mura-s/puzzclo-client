@@ -4,7 +4,7 @@
 package muras.puzzclo.utils;
 
 /**
- * 各種Swingコンポーネントのサイズを定義するUtilクラス
+ * 各種Swingコンポーネントのサイズや位置を定義するUtilクラス
  * 
  * @author muramatsu
  * 
@@ -33,11 +33,15 @@ public class ComponentSize {
 	public static final int PANEL_WIDTH = 402;
 
 	/**
-	 * パズルのwidth
+	 * パズルのwidth <br />
+	 * 
+	 * 6で割り切れる数にする。また、パズルの幅と高さは等しい。
 	 */
 	public static final int PUZZLE_WIDTH = PANEL_WIDTH;
 	/**
-	 * パズルのheight
+	 * パズルのheight <br />
+	 * 
+	 * 6で割り切れる数にする。また、パズルの幅と高さは等しい。
 	 */
 	public static final int PUZZLE_HEIGHT = PUZZLE_WIDTH;
 	/**
@@ -48,7 +52,6 @@ public class ComponentSize {
 	 * パズルの列の数
 	 */
 	public static final int PUZZLE_NUM_COLS = 6;
-
 
 	/**
 	 * 時計のwidth
@@ -62,7 +65,6 @@ public class ComponentSize {
 	 * 時計のfontsize
 	 */
 	public static final int CLOCK_FONTSIZE = 70;
-
 
 	/**
 	 * メッセージエリアのwidth
@@ -106,4 +108,27 @@ public class ComponentSize {
 	private ComponentSize() {
 	}
 
+	/**
+	 * パズル上の座標から、セルの位置を取得する。
+	 * 
+	 * @param pos
+	 *            パズル上のx座標またはy座標
+	 * @return 入力がx座標: 列番号<br />
+	 *         入力がy座標: 行番号
+	 * @throws IllegalArgumentException
+	 *             posがパズルの外の場合 (pos < 0 || PUZZLE_WIDTH < pos)
+	 */
+	public static int getCellNumFromPositon(int pos) {
+		if (pos < 0 || PUZZLE_WIDTH < pos) {
+			throw new IllegalArgumentException("座標が0以上" + PUZZLE_WIDTH
+					+ "以下ではありません。渡された座標: " + pos);
+		}
+
+		int cellSize = PUZZLE_WIDTH / PUZZLE_NUM_COLS;
+		// 境界値も範囲内にする
+		int cellNum = (pos == PUZZLE_WIDTH) ? (PUZZLE_NUM_COLS - 1)
+				: (pos / cellSize);
+
+		return cellNum;
+	}
 }

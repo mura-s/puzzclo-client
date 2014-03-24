@@ -10,8 +10,8 @@ import java.awt.Component;
 import java.awt.Dimension;
 import java.awt.event.MouseAdapter;
 import java.awt.event.MouseEvent;
+import java.awt.event.MouseMotionAdapter;
 
-import javax.swing.DropMode;
 import javax.swing.ImageIcon;
 import javax.swing.JLabel;
 import javax.swing.JPanel;
@@ -34,7 +34,7 @@ class PuzzlePanel extends JPanel {
 	// 名称部分のラベル
 	private final JLabel nameLabel = new NameLabel("パズル");
 
-	// パズルテーブル上のブロックの配置
+	// パズルテーブル上のブロックの配置。配列の一次元目が行、二次元目が列。
 	private final ImageIcon[][] puzzleBlocks = createPuzzleBlocks();
 	// パズル用のテーブルモデル(PUZZLE_NUM_ROWS行分確保)
 	private final DefaultTableModel tableModel = new PuzzleTableModel(
@@ -61,8 +61,9 @@ class PuzzlePanel extends JPanel {
 
 	private ImageIcon[][] createPuzzleBlocks() {
 		final ImageIcon[][] puzzleBlocks = new ImageIcon[PUZZLE_NUM_ROWS][PUZZLE_NUM_COLS];
+
 		for (ImageIcon[] blockRow : puzzleBlocks) {
-			// セルにアイコンを代入するに通常のfor文を使用
+			// セルにアイコンを代入するために通常のfor文を使用
 			for (int i = 0; i < blockRow.length; i++) {
 				blockRow[i] = PuzzleBlockColor.getRandomColor().getBlock();
 			}
@@ -92,6 +93,9 @@ class PuzzlePanel extends JPanel {
 	}
 
 	private void setCellSelection() {
+		// puzzleTable.getSelectionModel().setSelectionMode(
+		// ListSelectionModel.SINGLE_SELECTION);
+
 		// セルを選択できるようにする (行・列単位での選択にならないようにする)
 		puzzleTable.setCellSelectionEnabled(false);
 		puzzleTable.setRowSelectionAllowed(false);
@@ -99,18 +103,22 @@ class PuzzlePanel extends JPanel {
 		// セルをクリックした時に、選択状態を反映
 		puzzleTable.addMouseListener(new MouseAdapter() {
 			@Override
-			public void mouseClicked(MouseEvent e) {
+			public void mousePressed(MouseEvent e) {
 				selectedRow = puzzleTable.rowAtPoint(e.getPoint());
 				selectedCol = puzzleTable.columnAtPoint(e.getPoint());
+				// prepareRendererでrepaintする
 				puzzleTable.repaint();
 			}
 		});
+
 	}
 
 	private void setDragAndDrop() {
+		puzzleTable.addMouseMotionListener(new PuzzleDragListener());
+
 		// puzzleTable.setTransferHandler(new TransferHandler("text"));
-		puzzleTable.setDropMode(DropMode.INSERT_COLS);
-		puzzleTable.setDragEnabled(true);
+		// puzzleTable.setDropMode(DropMode.INSERT_COLS);
+		// puzzleTable.setDragEnabled(true);
 	}
 
 	/**
@@ -144,7 +152,7 @@ class PuzzlePanel extends JPanel {
 
 			if (row == selectedRow && column == selectedCol) {
 				// 選択されている場合
-				c.setBackground(Color.DARK_GRAY);
+				c.setBackground(getSelectionBackground());
 			} else if ((row + column) % 2 == 0) {
 				// 行と列の和が偶数の場合
 				c.setBackground(Color.LIGHT_GRAY);
@@ -188,6 +196,44 @@ class PuzzlePanel extends JPanel {
 		@Override
 		public boolean isCellEditable(int row, int column) {
 			return false;
+		}
+	}
+
+	/**
+	 * パズルをドラッグアンドドロップで交換するためのリスナーです。
+	 * 
+	 * @author muramatsu
+	 * 
+	 */
+	private class PuzzleDragListener extends MouseMotionAdapter {
+
+		/**
+		 * マウスが他のブロック上に移動したら、 そのブロックとドラッグ中のブロックを交換する。
+		 */
+		@Override
+		public void mouseDragged(MouseEvent e) {
+			int dstRow = getCellNumFromPositon(e.getPoint().y);
+			int dstCol = getCellNumFromPositon(e.getPoint().x);
+			
+			// パズルブロックを入れ替える
+			swap(selectedRow, selectedCol, dstRow, dstCol);
+			
+			// 入れ替わった先を選択状態にする
+			selectedRow = dstRow;
+			selectedCol = dstCol;
+			// prepareRendererでrepaintする
+			puzzleTable.repaint();
+		}
+
+		private void swap(int srcRow, int srcCol, int dstRow, int dstCol) {
+			// 保持しているパズルブロックを変更
+			ImageIcon temp = puzzleBlocks[srcRow][srcCol];
+			puzzleBlocks[srcRow][srcCol] = puzzleBlocks[dstRow][dstCol];
+			puzzleBlocks[dstRow][dstCol] = temp;
+
+			// 画面の表示を変更
+			tableModel.setValueAt(puzzleBlocks[srcRow][srcCol], srcRow, srcCol);
+			tableModel.setValueAt(puzzleBlocks[dstRow][dstCol], dstRow, dstCol);
 		}
 	}
 
