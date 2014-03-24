@@ -10,7 +10,9 @@ import java.awt.Component;
 import java.awt.Dimension;
 import java.awt.event.MouseAdapter;
 import java.awt.event.MouseEvent;
-import java.awt.event.MouseMotionAdapter;
+import java.awt.event.MouseMotionListener;
+import java.util.Timer;
+import java.util.TimerTask;
 
 import javax.swing.ImageIcon;
 import javax.swing.JLabel;
@@ -40,19 +42,20 @@ class PuzzlePanel extends JPanel {
 	private final DefaultTableModel tableModel = new PuzzleTableModel(
 			new String[PUZZLE_NUM_ROWS], 0);
 	// パズル用のテーブル
-	private final JTable puzzleTable = createPuzzleTable();
+	final JTable puzzleTable = createPuzzleTable();
 
+	// セルが選択されていない状態
+	private final int NOT_SELECTED = -1;
 	// 選択中の行
-	private int selectedRow = -1;
+	private int selectedRow = NOT_SELECTED;
 	// 選択中の列
-	private int selectedCol = -1;
+	private int selectedCol = NOT_SELECTED;
 
 	/**
 	 * コンストラクタ
 	 */
 	PuzzlePanel() {
 		arragePuzzleBlocks();
-		setCellSelection();
 		setDragAndDrop();
 
 		add(nameLabel);
@@ -92,33 +95,56 @@ class PuzzlePanel extends JPanel {
 		}
 	}
 
-	private void setCellSelection() {
-		// puzzleTable.getSelectionModel().setSelectionMode(
-		// ListSelectionModel.SINGLE_SELECTION);
-
-		// セルを選択できるようにする (行・列単位での選択にならないようにする)
+	private void setDragAndDrop() {
+		// セル単位で選択できるようにする (行・列単位での選択にならないようにする)
 		puzzleTable.setCellSelectionEnabled(false);
 		puzzleTable.setRowSelectionAllowed(false);
 
-		// セルをクリックした時に、選択状態を反映
-		puzzleTable.addMouseListener(new MouseAdapter() {
-			@Override
-			public void mousePressed(MouseEvent e) {
-				selectedRow = puzzleTable.rowAtPoint(e.getPoint());
-				selectedCol = puzzleTable.columnAtPoint(e.getPoint());
-				// prepareRendererでrepaintする
-				puzzleTable.repaint();
-			}
-		});
-
+		final PuzzleDragListener dragListener = new PuzzleDragListener();
+		// マウスクリックの設定
+		puzzleTable.addMouseListener(dragListener);
+		// ドラッグアンドドロップの設定
+		puzzleTable.addMouseMotionListener(dragListener);
 	}
 
-	private void setDragAndDrop() {
-		puzzleTable.addMouseMotionListener(new PuzzleDragListener());
+	private void setCellSelection(int row, int col) {
+		selectedRow = row;
+		selectedCol = col;
+		puzzleTable.repaint();
+	}
 
-		// puzzleTable.setTransferHandler(new TransferHandler("text"));
-		// puzzleTable.setDropMode(DropMode.INSERT_COLS);
-		// puzzleTable.setDragEnabled(true);
+	/**
+	 * パズルのテーブルにオブジェクトを格納するための定義を行うクラス
+	 * 
+	 * @author muramatsu
+	 * 
+	 */
+	private static class PuzzleTableModel extends DefaultTableModel {
+		private static final long serialVersionUID = 1L;
+
+		PuzzleTableModel(String[] columnNames, int rowNum) {
+			super(columnNames, rowNum);
+		}
+
+		/**
+		 * アイコンを表示するために、 格納されているオブジェクトの本当のクラスを返すようにする。
+		 * 
+		 * @return 格納されているオブジェクトのクラス
+		 */
+		@Override
+		public Class<?> getColumnClass(int col) {
+			return getValueAt(0, col).getClass();
+		}
+
+		/**
+		 * テーブルを編集不可にする。
+		 * 
+		 * @return false
+		 */
+		@Override
+		public boolean isCellEditable(int row, int column) {
+			return false;
+		}
 	}
 
 	/**
@@ -166,66 +192,93 @@ class PuzzlePanel extends JPanel {
 	}
 
 	/**
-	 * パズルのテーブルにオブジェクトを格納するための定義を行うクラス
-	 * 
-	 * @author muramatsu
-	 * 
-	 */
-	private static class PuzzleTableModel extends DefaultTableModel {
-		private static final long serialVersionUID = 1L;
-
-		PuzzleTableModel(String[] columnNames, int rowNum) {
-			super(columnNames, rowNum);
-		}
-
-		/**
-		 * アイコンを表示するために、 格納されているオブジェクトの本当のクラスを返すようにする。
-		 * 
-		 * @return 格納されているオブジェクトのクラス
-		 */
-		@Override
-		public Class<?> getColumnClass(int col) {
-			return getValueAt(0, col).getClass();
-		}
-
-		/**
-		 * テーブルを編集不可にする。
-		 * 
-		 * @return false
-		 */
-		@Override
-		public boolean isCellEditable(int row, int column) {
-			return false;
-		}
-	}
-
-	/**
 	 * パズルをドラッグアンドドロップで交換するためのリスナーです。
 	 * 
 	 * @author muramatsu
 	 * 
 	 */
-	private class PuzzleDragListener extends MouseMotionAdapter {
+	private class PuzzleDragListener extends MouseAdapter implements
+			MouseMotionListener {
+
+		/**
+		 * マウスが押されたら、その位置を設定し、選択状態にする。<br />
+		 * また、4秒後にドラッグ状態を自動で解除する。
+		 */
+		@Override
+		public void mousePressed(MouseEvent e) {
+			setCellSelection(puzzleTable.rowAtPoint(e.getPoint()),
+					puzzleTable.columnAtPoint(e.getPoint()));
+
+			deselectCellAfter4Sec();
+		}
+
+		/**
+		 * マウスが離されたら、選択していない状態にする。
+		 */
+		@Override
+		public void mouseReleased(MouseEvent e) {
+			setCellSelection(NOT_SELECTED, NOT_SELECTED);
+		}
 
 		/**
 		 * マウスが他のブロック上に移動したら、 そのブロックとドラッグ中のブロックを交換する。
 		 */
 		@Override
 		public void mouseDragged(MouseEvent e) {
-			int dstRow = getCellNumFromPositon(e.getPoint().y);
-			int dstCol = getCellNumFromPositon(e.getPoint().x);
-			
+			// NOT_SELECTEDの場合は、ブロックを交換しないようにする。
+			if (selectedRow == NOT_SELECTED && selectedCol == NOT_SELECTED) {
+				return;
+			}
+
+			int x = e.getPoint().x;
+			int y = e.getPoint().y;
+
+			boolean outOfPuzzleTable = x < 0 || x > PUZZLE_WIDTH || y < 0
+					|| y > PUZZLE_HEIGHT;
+			if (outOfPuzzleTable) {
+				setCellSelection(NOT_SELECTED, NOT_SELECTED);
+				e.consume();
+				return;
+			}
+
+			int dstRow = getCellNumFromPositon(y);
+			int dstCol = getCellNumFromPositon(x);
+
 			// パズルブロックを入れ替える
 			swap(selectedRow, selectedCol, dstRow, dstCol);
-			
 			// 入れ替わった先を選択状態にする
-			selectedRow = dstRow;
-			selectedCol = dstCol;
-			// prepareRendererでrepaintする
-			puzzleTable.repaint();
+			setCellSelection(dstRow, dstCol);
+		}
+
+		@Override
+		public void mouseMoved(MouseEvent e) {
+		}
+
+		/**
+		 * 4秒後にセルの選択を解除する。
+		 */
+		private void deselectCellAfter4Sec() {
+			Timer timer = new Timer();
+			TimerTask task = new TimerTask() {
+				@Override
+				public void run() {
+					setCellSelection(NOT_SELECTED, NOT_SELECTED);
+				}
+			};
+			timer.schedule(task, 4000);
 		}
 
 		private void swap(int srcRow, int srcCol, int dstRow, int dstCol) {
+
+			boolean invalidSrcIndex = srcRow < 0 || PUZZLE_NUM_ROWS <= srcRow
+					|| srcCol < 0 || PUZZLE_NUM_COLS <= srcCol;
+			boolean invalidDstIndex = dstRow < 0 || PUZZLE_NUM_ROWS <= dstRow
+					|| dstCol < 0 || PUZZLE_NUM_COLS <= dstCol;
+
+			if (invalidSrcIndex || invalidDstIndex) {
+				throw new IndexOutOfBoundsException("引数が範囲外です。");
+			}
+
 			// 保持しているパズルブロックを変更
 			ImageIcon temp = puzzleBlocks[srcRow][srcCol];
 			puzzleBlocks[srcRow][srcCol] = puzzleBlocks[dstRow][dstCol];
@@ -235,6 +288,7 @@ class PuzzlePanel extends JPanel {
 			tableModel.setValueAt(puzzleBlocks[srcRow][srcCol], srcRow, srcCol);
 			tableModel.setValueAt(puzzleBlocks[dstRow][dstCol], dstRow, dstCol);
 		}
+
 	}
 
 }

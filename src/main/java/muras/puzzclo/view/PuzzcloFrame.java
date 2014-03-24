@@ -22,12 +22,12 @@ public final class PuzzcloFrame extends JFrame {
 
 	private final String name = "パズクロ！ (Puzzle & Clocks)";
 
-	// 操作部のパネル
-	private final JPanel controlPanel = new ControlPanel();
-	// 時計部のパネル
-	private final JPanel clockPanel = new ClockPanel();
 	// パズル部のパネル
 	private final JPanel puzzlePanel = new PuzzlePanel();
+	// 時計部のパネル
+	private final JPanel clockPanel = new ClockPanel();
+	// 操作部のパネル
+	private final JPanel controlPanel = new ControlPanel();
 
 	/**
 	 * コンストラクタ
