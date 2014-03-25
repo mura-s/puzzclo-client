@@ -53,7 +53,7 @@ public final class PuzzleBlocks {
 	}
 
 	/**
-	 * 2つのブロックの配置を入れ替える。
+	 * 入れ替え元と入れ替え先のセルが異なっている場合に、 2つのブロックの配置を入れ替える。
 	 * 
 	 * @param srcRow
 	 *            入れ替え元のセルの行
@@ -66,22 +66,97 @@ public final class PuzzleBlocks {
 	 */
 	public void swap(int srcRow, int srcCol, int dstRow, int dstCol) {
 
-		boolean invalidSrcIndex = srcRow < 0
-				|| PUZZLE_CELLNUM_OF_SIDE <= srcRow || srcCol < 0
-				|| PUZZLE_CELLNUM_OF_SIDE <= srcCol;
-		boolean invalidDstIndex = dstRow < 0
-				|| PUZZLE_CELLNUM_OF_SIDE <= dstRow || dstCol < 0
-				|| PUZZLE_CELLNUM_OF_SIDE <= dstCol;
-
-		if (invalidSrcIndex || invalidDstIndex) {
+		if (!isCellOnPuzzleTable(srcRow, srcCol)
+				|| !isCellOnPuzzleTable(srcRow, srcCol)) {
 			throw new IndexOutOfBoundsException("引数のセルが範囲外です。");
 		}
 
-		// 入れ替え
-		Object srcCell = tableModel.getValueAt(srcRow, srcCol);
-		Object dstCell = tableModel.getValueAt(dstRow, dstCol);
-		tableModel.setValueAt(dstCell, srcRow, srcCol);
-		tableModel.setValueAt(srcCell, dstRow, dstCol);
+		// 入れ替え元と入れ替え先のセルが異なっている場合に、入れ替え
+		if ((srcRow != dstRow) || (srcCol != dstCol)) {
+			Object srcCell = tableModel.getValueAt(srcRow, srcCol);
+			Object dstCell = tableModel.getValueAt(dstRow, dstCol);
+			tableModel.setValueAt(dstCell, srcRow, srcCol);
+			tableModel.setValueAt(srcCell, dstRow, dstCol);
+		}
+	}
+
+	/**
+	 * パズルの配置から、消える部分を消去し、得点を計算する。<br />
+	 * 
+	 * 消えた部分には、上からパズルをドロップし、さらに消える部分があれば消す。
+	 * この操作を繰り返し、消える部分がなくなった時点で、得点を合計し、returnする。<br />
+	 * 
+	 * ここで、消える部分は、3個以上の同じ色のブロックが隣り合っているところとする。
+	 * 
+	 * @return 得点
+	 */
+	public int judgeCombo() {
+
+		// ブロック配置の取得
+		final ImageIcon[][] blocks = getBlockArrangement();
+
+		// 消えるブロックの位置
+		// trueが消えるブロックを表す
+		final boolean[][] delMap = new boolean[PUZZLE_CELLNUM_OF_SIDE][PUZZLE_CELLNUM_OF_SIDE];
+
+		// 行方向の判定
+		// 3個同じ色が続かないと消えないので、列は(PUZZLE_CELLNUM_OF_SIDE - 2)までで十分
+		for (int i = 0; i < PUZZLE_CELLNUM_OF_SIDE; i++) {
+			for (int j = 0; j < (PUZZLE_CELLNUM_OF_SIDE - 2); j++) {
+				String thisColor = blocks[i][j].getDescription();
+				String rightColor = blocks[i][j + 1].getDescription();
+				String right2Color = blocks[i][j + 2].getDescription();
+
+				if (thisColor.equals(rightColor)
+						&& rightColor.equals(right2Color)) {
+					delMap[i][j] = delMap[i][j + 1] = delMap[i][j + 2] = true;
+				}
+			}
+		}
+
+		// 列方向の判定
+		// 行方向と同じ理由で、行は(PUZZLE_CELLNUM_OF_SIDE - 2)までで十分
+		for (int j = 0; j < PUZZLE_CELLNUM_OF_SIDE; j++) {
+			for (int i = 0; i < (PUZZLE_CELLNUM_OF_SIDE - 2); i++) {
+				String thisColor = blocks[i][j].getDescription();
+				String downColor = blocks[i + 1][j].getDescription();
+				String down2Color = blocks[i + 2][j].getDescription();
+
+				if (thisColor.equals(downColor) && downColor.equals(down2Color)) {
+					delMap[i][j] = delMap[i + 1][j] = delMap[i + 2][j] = true;
+				}
+			}
+		}
+		
+		// 得点を計算し、消えるブロックを消す
+		int score = 0;
+		
+		for (int i = 0; i < PUZZLE_CELLNUM_OF_SIDE; i++) {
+			for (int j = 0; j < PUZZLE_CELLNUM_OF_SIDE; j++) {
+				if (delMap[i][j]) {
+					score++;
+					tableModel.setValueAt(null, i, j);
+				}
+			}
+		}
+
+		return score;
+	}
+
+	private ImageIcon[][] getBlockArrangement() {
+		final ImageIcon[][] blocks = new ImageIcon[PUZZLE_CELLNUM_OF_SIDE][PUZZLE_CELLNUM_OF_SIDE];
+
+		for (int i = 0; i < PUZZLE_CELLNUM_OF_SIDE; i++) {
+			for (int j = 0; j < PUZZLE_CELLNUM_OF_SIDE; j++) {
+				blocks[i][j] = (ImageIcon) tableModel.getValueAt(i, j);
+				
+				if (blocks[i][j] == null) {
+					throw new AssertionError("blockが空のことはありません。");
+				}
+			}
+		}
+
+		return blocks;
 	}
 
 	/**
@@ -104,7 +179,7 @@ public final class PuzzleBlocks {
 		 */
 		@Override
 		public Class<?> getColumnClass(int col) {
-			return getValueAt(0, col).getClass();
+			return ImageIcon.class;
 		}
 
 		/**

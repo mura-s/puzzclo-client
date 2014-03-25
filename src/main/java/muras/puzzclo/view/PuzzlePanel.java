@@ -8,6 +8,7 @@ import static muras.puzzclo.utils.ComponentSize.*;
 import java.awt.Color;
 import java.awt.Component;
 import java.awt.Dimension;
+import java.awt.Point;
 import java.awt.event.MouseAdapter;
 import java.awt.event.MouseEvent;
 import java.awt.event.MouseMotionListener;
@@ -21,7 +22,9 @@ import javax.swing.border.LineBorder;
 import javax.swing.table.DefaultTableModel;
 import javax.swing.table.TableCellRenderer;
 
+import muras.puzzclo.model.CellState;
 import muras.puzzclo.model.PuzzleBlocks;
+import muras.puzzclo.model.CellState.SelectedState;
 
 /**
  * パズル部分のパネル
@@ -38,15 +41,11 @@ class PuzzlePanel extends JPanel {
 	// パズル内のブロックとその処理
 	private final PuzzleBlocks puzzleBlocks = new PuzzleBlocks();
 
+	// セルの選択状態
+	private CellState cellState = new CellState();
+
 	// パズル用のテーブル
 	private final JTable puzzleTable = createPuzzleTable();
-
-	// セルが選択されていない状態
-	private final int NOT_SELECTED = -1;
-	// 選択中の行
-	private int selectedRow = NOT_SELECTED;
-	// 選択中の列
-	private int selectedCol = NOT_SELECTED;
 
 	/**
 	 * コンストラクタ
@@ -63,8 +62,8 @@ class PuzzlePanel extends JPanel {
 		JTable puzzleTable = new PuzzleTable(puzzleBlocks.getTableModel());
 
 		// サイズの設定
-		puzzleTable
-				.setPreferredSize(new Dimension(PUZZLE_SIZE_LENGTH, PUZZLE_SIZE_LENGTH));
+		puzzleTable.setPreferredSize(new Dimension(PUZZLE_SIZE_LENGTH,
+				PUZZLE_SIZE_LENGTH));
 		puzzleTable.setRowHeight(PUZZLE_SIZE_LENGTH / PUZZLE_CELLNUM_OF_SIDE);
 		// 枠の色の設定
 		puzzleTable.setBorder(new LineBorder(Color.DARK_GRAY));
@@ -83,12 +82,6 @@ class PuzzlePanel extends JPanel {
 		puzzleTable.addMouseListener(dragListener);
 		// ドラッグアンドドロップの設定
 		puzzleTable.addMouseMotionListener(dragListener);
-	}
-
-	private void setCellSelection(int row, int col) {
-		selectedRow = row;
-		selectedCol = col;
-		puzzleTable.repaint();
 	}
 
 	/**
@@ -120,7 +113,8 @@ class PuzzlePanel extends JPanel {
 				int column) {
 			Component c = super.prepareRenderer(tcr, row, column);
 
-			if (row == selectedRow && column == selectedCol) {
+			if (row == cellState.getSelectedRow()
+					&& column == cellState.getSelectedCol()) {
 				// 選択されている場合
 				c.setBackground(getSelectionBackground());
 			} else if ((row + column) % 2 == 0) {
@@ -148,25 +142,36 @@ class PuzzlePanel extends JPanel {
 		private final Timer timer = new Timer();
 		private TimerTask task;
 
+		// ロックオブジェクト
+		Object lock = new Object();
+
 		/**
 		 * マウスが押されたら、その位置を設定し、選択状態にする。<br />
 		 * また、4秒後にドラッグ状態を自動で解除する。
 		 */
 		@Override
 		public void mousePressed(MouseEvent e) {
-			setCellSelection(puzzleTable.rowAtPoint(e.getPoint()),
-					puzzleTable.columnAtPoint(e.getPoint()));
+			final int row = puzzleTable.rowAtPoint(e.getPoint());
+			final int col = puzzleTable.columnAtPoint(e.getPoint());
+
+			cellState.changeSelectedState(row, col);
+			repaint();
 
 			deselectCellAfter4Sec();
 		}
 
 		/**
-		 * マウスが離されたら、選択していない状態にする。
+		 * マウスが離されたら、選択していない状態にする。<br />
+		 * マウスを話してから、得点計算を行う。
 		 */
 		@Override
 		public void mouseReleased(MouseEvent e) {
-			setCellSelection(NOT_SELECTED, NOT_SELECTED);
-			cancelTimerTask();
+			finishDrag();
+
+			// TODO
+			final int score = puzzleBlocks.judgeCombo();
+
+			repaint();
 		}
 
 		/**
@@ -174,29 +179,32 @@ class PuzzlePanel extends JPanel {
 		 */
 		@Override
 		public void mouseDragged(MouseEvent e) {
-			// NOT_SELECTEDの場合は、ブロックを交換しないようにする。
-			if (selectedRow == NOT_SELECTED && selectedCol == NOT_SELECTED) {
-				return;
+			// mouseDraggedは並行して走ってしまうのでロックする。
+			synchronized (lock) {
+
+				// NOT_SELECTEDの場合は、ブロックを交換しないようにする
+				if (cellState.getSelectedState() == SelectedState.NOT_SELECTED) {
+					return;
+				}
+
+				final Point p = e.getPoint();
+
+				// パズル上から外れたら終了
+				if (!isPosOnPuzzleTable(p.x, p.y)) {
+					finishDrag();
+					return;
+				}
+
+				final int dstRow = puzzleTable.rowAtPoint(p);
+				final int dstCol = puzzleTable.columnAtPoint(p);
+
+				// パズルブロックを入れ替える
+				puzzleBlocks.swap(cellState.getSelectedRow(),
+						cellState.getSelectedCol(), dstRow, dstCol);
+				// 入れ替わった先を選択状態にする
+				cellState.changeSelectedState(dstRow, dstCol);
+				repaint();
 			}
-
-			final int x = e.getPoint().x;
-			final int y = e.getPoint().y;
-
-			boolean outOfPuzzleTable = x < 0 || x > PUZZLE_SIZE_LENGTH || y < 0
-					|| y > PUZZLE_SIZE_LENGTH;
-			if (outOfPuzzleTable) {
-				setCellSelection(NOT_SELECTED, NOT_SELECTED);
-				cancelTimerTask();
-				return;
-			}
-
-			final int dstRow = getCellNumFromPositon(y);
-			final int dstCol = getCellNumFromPositon(x);
-
-			// パズルブロックを入れ替える
-			puzzleBlocks.swap(selectedRow, selectedCol, dstRow, dstCol);
-			// 入れ替わった先を選択状態にする
-			setCellSelection(dstRow, dstCol);
 		}
 
 		/**
@@ -206,7 +214,7 @@ class PuzzlePanel extends JPanel {
 			task = new TimerTask() {
 				@Override
 				public void run() {
-					setCellSelection(NOT_SELECTED, NOT_SELECTED);
+					finishDrag();
 				}
 			};
 			timer.schedule(task, 4000);
@@ -216,6 +224,13 @@ class PuzzlePanel extends JPanel {
 			if (task != null) {
 				task.cancel();
 			}
+		}
+
+		private void finishDrag() {
+			cancelTimerTask();
+			cellState.changeSelectedState(CellState.NOT_SELECTED_NUM,
+					CellState.NOT_SELECTED_NUM);
+			repaint();
 		}
 
 		@Override

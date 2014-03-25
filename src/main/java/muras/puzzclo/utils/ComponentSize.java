@@ -39,7 +39,7 @@ public class ComponentSize {
 	public static final int PUZZLE_SIZE_LENGTH = PANEL_WIDTH;
 
 	/**
-	 * パズルの行の数
+	 * パズルの一辺のセルの数
 	 */
 	public static final int PUZZLE_CELLNUM_OF_SIDE = 6;
 
@@ -99,7 +99,8 @@ public class ComponentSize {
 	}
 
 	/**
-	 * パズル上の座標から、セルの位置を取得する。
+	 * パズル上の座標から、セルの位置を取得する。<br />
+	 * 境界値も範囲内とする。
 	 * 
 	 * @param pos
 	 *            パズル上のx座標またはy座標
@@ -121,4 +122,38 @@ public class ComponentSize {
 
 		return cellNum;
 	}
+	
+	/**
+	 * x座標とy座標の位置のセルがパズルテーブル上かどうかを調べる。<br />
+	 * 境界値も範囲内とする。
+	 * 
+	 * @param x x座標
+	 * @param y y座標
+	 * @return true: テーブル上の場合、false: テーブル外の場合
+	 */
+	public static boolean isPosOnPuzzleTable(int x, int y) {
+		if (x < 0 || PUZZLE_SIZE_LENGTH < x ||
+				y < 0 || PUZZLE_SIZE_LENGTH < y) {
+			return false;
+		}
+		
+		return true;
+	}
+	
+	/**
+	 * rowとcolの位置のセルがパズルテーブル上かどうかを調べる。
+	 * 
+	 * @param row 行
+	 * @param col 列
+	 * @return true: テーブル上の場合、false: テーブル外の場合
+	 */
+	public static boolean isCellOnPuzzleTable(int row, int col) {
+		if (row < 0 || PUZZLE_CELLNUM_OF_SIDE <= row ||
+				col < 0 || PUZZLE_CELLNUM_OF_SIDE <= col) {
+			return false;
+		}
+		
+		return true;
+	}
+	
 }
