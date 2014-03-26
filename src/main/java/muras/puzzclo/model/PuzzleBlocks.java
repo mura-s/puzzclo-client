@@ -93,6 +93,7 @@ public final class PuzzleBlocks implements PuzzleStateSubject {
 		if ((srcRow != dstRow) || (srcCol != dstCol)) {
 			Object srcCell = tableModel.getValueAt(srcRow, srcCol);
 			Object dstCell = tableModel.getValueAt(dstRow, dstCol);
+			
 			tableModel.setValueAt(dstCell, srcRow, srcCol);
 			tableModel.setValueAt(srcCell, dstRow, dstCol);
 		}
@@ -104,7 +105,7 @@ public final class PuzzleBlocks implements PuzzleStateSubject {
 	 * パズルの配置から、消える部分を消去し、得点を計算する。<br />
 	 * 
 	 * 消えた部分には、上からパズルをドロップし、さらに消える部分があれば消す。
-	 * この操作を繰り返し、消える部分がなくなった時点で、得点を合計し、returnする。<br />
+	 * この操作を繰り返し、消える部分がなくなった時点で、得点(消えた数)を合計し、returnする。<br />
 	 * 
 	 * ここで、消える部分は、3個以上の同じ色のブロックが隣り合っているところとする。
 	 * 
@@ -112,14 +113,14 @@ public final class PuzzleBlocks implements PuzzleStateSubject {
 	 */
 	public int judgeCombo() {
 
-		// ブロック配置の取得
+		// ブロック配置のビュー
 		final ImageIcon[][] blocks = getBlockArrangement();
 
 		// 消えるブロックの位置
 		// trueが消えるブロックを表す
 		final boolean[][] delMap = new boolean[PUZZLE_CELLNUM_OF_SIDE][PUZZLE_CELLNUM_OF_SIDE];
 
-		// 行方向の判定
+		// 行方向の判定 (パズルを左上から右方向に見ていく)
 		// 3個同じ色が続かないと消えないので、列は(PUZZLE_CELLNUM_OF_SIDE - 2)までで十分
 		for (int i = 0; i < PUZZLE_CELLNUM_OF_SIDE; i++) {
 			for (int j = 0; j < (PUZZLE_CELLNUM_OF_SIDE - 2); j++) {
@@ -134,7 +135,7 @@ public final class PuzzleBlocks implements PuzzleStateSubject {
 			}
 		}
 
-		// 列方向の判定
+		// 列方向の判定 (パズルを左上から下方向に見ていく)
 		// 行方向と同じ理由で、行は(PUZZLE_CELLNUM_OF_SIDE - 2)までで十分
 		for (int j = 0; j < PUZZLE_CELLNUM_OF_SIDE; j++) {
 			for (int i = 0; i < (PUZZLE_CELLNUM_OF_SIDE - 2); i++) {
@@ -149,25 +150,30 @@ public final class PuzzleBlocks implements PuzzleStateSubject {
 		}
 
 		// 得点を計算し、消えるブロックを消す
-		int score = 0;
+		int score = execDisappear(delMap, blocks);
 
-		for (int i = 0; i < PUZZLE_CELLNUM_OF_SIDE; i++) {
-			for (int j = 0; j < PUZZLE_CELLNUM_OF_SIDE; j++) {
-				if (delMap[i][j]) {
-					score++;
-					tableModel.setValueAt(null, i, j);
-				}
-			}
+		try {
+			// 400msec後に空いた部分を詰める
+			Thread.sleep(400);
+			fillBelowBlocks(blocks);
+
+			// 更に400msec後に新しいブロックを配置する
+			Thread.sleep(400);
+			fillNewBlocks(blocks);
+			
+			// 次の消す処理までのマージン
+			Thread.sleep(400);
+			
+		} catch (InterruptedException e) {
+			e.printStackTrace();
 		}
 
-		notifyToListeners();
-
-		// 空いた部分を詰める
-		
-
-		// 新しいブロックを配置する。
-
-		return score;
+		// コンボが続く限り、再帰する
+		if (score == 0) {
+			return 0;
+		} else {
+			return (score += judgeCombo());
+		}
 	}
 
 	private ImageIcon[][] getBlockArrangement() {
@@ -184,6 +190,76 @@ public final class PuzzleBlocks implements PuzzleStateSubject {
 		}
 
 		return blocks;
+	}
+	
+	private int execDisappear(boolean[][] delMap, ImageIcon[][] blocks) {
+		int score = 0;
+		
+		for (int i = 0; i < PUZZLE_CELLNUM_OF_SIDE; i++) {
+			for (int j = 0; j < PUZZLE_CELLNUM_OF_SIDE; j++) {
+				if (delMap[i][j]) {
+					score++;
+					tableModel.setValueAt(null, i, j);
+					// 後で利用するので、ビューも一緒に空にする。
+					blocks[i][j] = null;
+				}
+			}
+		}
+
+		notifyToListeners();
+		
+		return score;
+	}
+
+	/**
+	 * パズルを左下から上方向に見ていき、空いている部分を上のブロックで詰める。
+	 * 
+	 * @param blocks
+	 *            ブロックの配置
+	 */
+	private void fillBelowBlocks(ImageIcon[][] blocks) {
+		for (int col = 0; col < PUZZLE_CELLNUM_OF_SIDE; col++) {
+			for (int row = (PUZZLE_CELLNUM_OF_SIDE - 1); row >= 0; row--) {
+				if (blocks[row][col] != null) {
+					// 空でないブロックがあったら、それより下の空の部分に詰める。
+					for (int blankRow = (PUZZLE_CELLNUM_OF_SIDE - 1); blankRow > row; blankRow--) {
+						if (blocks[blankRow][col] == null) {
+							tableModel.setValueAt(blocks[row][col], blankRow,
+									col);
+							blocks[blankRow][col] = blocks[row][col];
+
+							tableModel.setValueAt(null, row, col);
+							blocks[row][col] = null;
+
+							break;
+						}
+					}
+				}
+			}
+		}
+
+		notifyToListeners();
+	}
+
+	/**
+	 * パズルを左下から上方向に見ていき、空いている部分を新しいブロックで詰める。
+	 * 
+	 * @param blocks
+	 *            ブロックの配置
+	 */
+	private void fillNewBlocks(ImageIcon[][] blocks) {
+		for (int col = 0; col < PUZZLE_CELLNUM_OF_SIDE; col++) {
+			for (int row = (PUZZLE_CELLNUM_OF_SIDE - 1); row >= 0; row--) {
+				if (blocks[row][col] == null) {
+					ImageIcon block = PuzzleBlockColor.getRandomColor()
+							.getBlock();
+					tableModel.setValueAt(block, row, col);
+					blocks[row][col] = block;
+				}
+			}
+		}
+
+		notifyToListeners();
 	}
 
 	/**

@@ -18,22 +18,12 @@ import muras.puzzclo.event.PuzzleListener;
  */
 public class CellState implements PuzzleStateSubject {
 
-	/**
-	 * セルの選択状態
-	 * 
-	 * @author muramatsu
-	 * 
-	 */
-	public enum SelectedState {
-		NOT_SELECTED, SELECTED;
-	}
-
 	public static final int NOT_SELECTED_NUM = -1;
 
 	private int selectedRow = NOT_SELECTED_NUM;
 	private int selectedCol = NOT_SELECTED_NUM;
 
-	private SelectedState selectedState = SelectedState.NOT_SELECTED;
+	private boolean selected = false;
 
 	private final List<PuzzleListener> listeners = new ArrayList<>();
 
@@ -60,8 +50,8 @@ public class CellState implements PuzzleStateSubject {
 	 * 
 	 * @return セルの選択状態
 	 */
-	public SelectedState getSelectedState() {
-		return selectedState;
+	public boolean isSelected() {
+		return selected;
 	}
 
 	@Override
@@ -88,15 +78,14 @@ public class CellState implements PuzzleStateSubject {
 	 *             変更後のセルの位置が範囲外の場合
 	 */
 	public void changeSelectedState(int row, int col) {
-		boolean notSelected = (row == -1 && col == -1);
+		boolean notSelected = (row == NOT_SELECTED_NUM && col == NOT_SELECTED_NUM);
 		if (!isCellOnPuzzleTable(row, col) && !notSelected) {
 			throw new IllegalArgumentException("変更後のセルの位置が範囲外です。");
 		}
 
 		selectedRow = row;
 		selectedCol = col;
-		selectedState = (notSelected ? SelectedState.NOT_SELECTED
-				: SelectedState.SELECTED);
+		selected = !notSelected;
 
 		notifyToListeners();
 	}

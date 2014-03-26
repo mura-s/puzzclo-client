@@ -25,7 +25,6 @@ import javax.swing.table.TableCellRenderer;
 import muras.puzzclo.event.PuzzleListener;
 import muras.puzzclo.model.CellState;
 import muras.puzzclo.model.PuzzleBlocks;
-import muras.puzzclo.model.CellState.SelectedState;
 
 /**
  * パズル部分のパネル
@@ -150,6 +149,12 @@ class PuzzlePanel extends JPanel {
 		// ドラッグの時間制限用のタイマー
 		private final Timer timer = new Timer();
 		private TimerTask task;
+		
+		// パズルを消した得点
+		private int score = 0;
+		
+		// ジャッジ中かどうか。ジャッジ中ならマウスを反応しなくする。
+		private boolean judging = false;
 
 		/**
 		 * マウスが押されたら、その位置を設定し、選択状態にする。<br />
@@ -157,6 +162,10 @@ class PuzzlePanel extends JPanel {
 		 */
 		@Override
 		public void mousePressed(MouseEvent e) {
+			if (judging) {
+				return;
+			}
+			
 			final int row = puzzleTable.rowAtPoint(e.getPoint());
 			final int col = puzzleTable.columnAtPoint(e.getPoint());
 
@@ -171,10 +180,24 @@ class PuzzlePanel extends JPanel {
 		 */
 		@Override
 		public void mouseReleased(MouseEvent e) {
+			if (judging) {
+				return;
+			}
+			
 			finishDrag();
 
-			// TODO
-			final int score = puzzleBlocks.judgeCombo();
+			// アニメーションのために、別スレッドで動かす
+			Thread th = new Thread(new Runnable() {
+
+				public void run() {
+					judging = true;
+					score = puzzleBlocks.judgeCombo();
+					judging = false;
+					
+					System.out.println(score);
+				}
+			});
+			th.start();
 
 		}
 
@@ -183,8 +206,12 @@ class PuzzlePanel extends JPanel {
 		 */
 		@Override
 		public void mouseDragged(MouseEvent e) {
+			if (judging) {
+				return;
+			}
+			
 			// NOT_SELECTEDの場合は、ブロックを交換しないようにする
-			if (cellState.getSelectedState() == SelectedState.NOT_SELECTED) {
+			if (!cellState.isSelected()) {
 				return;
 			}
 
