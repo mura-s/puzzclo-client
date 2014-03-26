@@ -97,43 +97,18 @@ public class ComponentSize {
 	 */
 	private ComponentSize() {
 	}
-
-	/**
-	 * パズル上の座標から、セルの位置を取得する。<br />
-	 * 境界値も範囲内とする。
-	 * 
-	 * @param pos
-	 *            パズル上のx座標またはy座標
-	 * @return 入力がx座標: 列番号<br />
-	 *         入力がy座標: 行番号
-	 * @throws IllegalArgumentException
-	 *             posがパズルの外の場合 (pos < 0 || PUZZLE_WIDTH < pos)
-	 */
-	public static int getCellNumFromPositon(int pos) {
-		if (pos < 0 || PUZZLE_SIZE_LENGTH < pos) {
-			throw new IllegalArgumentException("座標が0以上" + PUZZLE_SIZE_LENGTH
-					+ "以下ではありません。渡された座標: " + pos);
-		}
-
-		int cellSize = PUZZLE_SIZE_LENGTH / PUZZLE_CELLNUM_OF_SIDE;
-		// 境界値も範囲内にする
-		int cellNum = (pos == PUZZLE_SIZE_LENGTH) ? (PUZZLE_CELLNUM_OF_SIDE - 1)
-				: (pos / cellSize);
-
-		return cellNum;
-	}
 	
 	/**
 	 * x座標とy座標の位置のセルがパズルテーブル上かどうかを調べる。<br />
-	 * 境界値も範囲内とする。
+	 * 最大の境界値は範囲外とする。
 	 * 
 	 * @param x x座標
 	 * @param y y座標
 	 * @return true: テーブル上の場合、false: テーブル外の場合
 	 */
 	public static boolean isPosOnPuzzleTable(int x, int y) {
-		if (x < 0 || PUZZLE_SIZE_LENGTH < x ||
-				y < 0 || PUZZLE_SIZE_LENGTH < y) {
+		if (x < 0 || PUZZLE_SIZE_LENGTH <= x ||
+				y < 0 || PUZZLE_SIZE_LENGTH <= y) {
 			return false;
 		}
 		
@@ -142,6 +117,7 @@ public class ComponentSize {
 	
 	/**
 	 * rowとcolの位置のセルがパズルテーブル上かどうかを調べる。
+	 * 最大の境界値は範囲外とする。
 	 * 
 	 * @param row 行
 	 * @param col 列

@@ -5,9 +5,13 @@ package muras.puzzclo.model;
 
 import static muras.puzzclo.utils.ComponentSize.*;
 
+import java.util.ArrayList;
+import java.util.List;
+
 import javax.swing.ImageIcon;
 import javax.swing.table.DefaultTableModel;
 
+import muras.puzzclo.event.PuzzleListener;
 import muras.puzzclo.utils.PuzzleBlockColor;
 
 /**
@@ -17,12 +21,14 @@ import muras.puzzclo.utils.PuzzleBlockColor;
  * @author muramatsu
  * 
  */
-public final class PuzzleBlocks {
+public final class PuzzleBlocks implements PuzzleStateSubject {
 
 	// パズル用のテーブルモデル(PUZZLE_NUM_ROWS行分確保)
 	// ブロックの配置を保持
 	private final DefaultTableModel tableModel = new PuzzleTableModel(
 			new String[PUZZLE_CELLNUM_OF_SIDE], 0);
+
+	private final List<PuzzleListener> listeners = new ArrayList<>();
 
 	/**
 	 * パズル用のテーブルモデルのゲッター
@@ -33,10 +39,22 @@ public final class PuzzleBlocks {
 		return tableModel;
 	}
 
+	@Override
+	public void addPuzzleListener(PuzzleListener listener) {
+		listeners.add(listener);
+	}
+
+	@Override
+	public void notifyToListeners() {
+		for (PuzzleListener listener : listeners) {
+			listener.puzzleChanged();
+		}
+	}
+
 	/**
 	 * パズルテーブル上にブロックを配置する。
 	 */
-	public void arragePuzzleBlocks() {
+	public void initPuzzleBlocks() {
 		final ImageIcon[][] tmpBlocks = new ImageIcon[PUZZLE_CELLNUM_OF_SIDE][PUZZLE_CELLNUM_OF_SIDE];
 
 		for (ImageIcon[] blockRow : tmpBlocks) {
@@ -67,7 +85,7 @@ public final class PuzzleBlocks {
 	public void swap(int srcRow, int srcCol, int dstRow, int dstCol) {
 
 		if (!isCellOnPuzzleTable(srcRow, srcCol)
-				|| !isCellOnPuzzleTable(srcRow, srcCol)) {
+				|| !isCellOnPuzzleTable(dstRow, dstCol)) {
 			throw new IndexOutOfBoundsException("引数のセルが範囲外です。");
 		}
 
@@ -78,6 +96,8 @@ public final class PuzzleBlocks {
 			tableModel.setValueAt(dstCell, srcRow, srcCol);
 			tableModel.setValueAt(srcCell, dstRow, dstCol);
 		}
+
+		notifyToListeners();
 	}
 
 	/**
@@ -127,10 +147,10 @@ public final class PuzzleBlocks {
 				}
 			}
 		}
-		
+
 		// 得点を計算し、消えるブロックを消す
 		int score = 0;
-		
+
 		for (int i = 0; i < PUZZLE_CELLNUM_OF_SIDE; i++) {
 			for (int j = 0; j < PUZZLE_CELLNUM_OF_SIDE; j++) {
 				if (delMap[i][j]) {
@@ -139,6 +159,13 @@ public final class PuzzleBlocks {
 				}
 			}
 		}
+
+		notifyToListeners();
+
+		// 空いた部分を詰める
+		
+
+		// 新しいブロックを配置する。
 
 		return score;
 	}
@@ -149,7 +176,7 @@ public final class PuzzleBlocks {
 		for (int i = 0; i < PUZZLE_CELLNUM_OF_SIDE; i++) {
 			for (int j = 0; j < PUZZLE_CELLNUM_OF_SIDE; j++) {
 				blocks[i][j] = (ImageIcon) tableModel.getValueAt(i, j);
-				
+
 				if (blocks[i][j] == null) {
 					throw new AssertionError("blockが空のことはありません。");
 				}
@@ -192,4 +219,5 @@ public final class PuzzleBlocks {
 			return false;
 		}
 	}
+
 }

@@ -5,13 +5,18 @@ package muras.puzzclo.model;
 
 import static muras.puzzclo.utils.ComponentSize.*;
 
+import java.util.ArrayList;
+import java.util.List;
+
+import muras.puzzclo.event.PuzzleListener;
+
 /**
  * セルの選択状態を表す。
  * 
  * @author muramatsu
  * 
  */
-public class CellState {
+public class CellState implements PuzzleStateSubject {
 
 	/**
 	 * セルの選択状態
@@ -30,9 +35,10 @@ public class CellState {
 
 	private SelectedState selectedState = SelectedState.NOT_SELECTED;
 
+	private final List<PuzzleListener> listeners = new ArrayList<>();
+
 	/**
-	 * 選択中の行番号を取得する。
-	 * 未選択の場合は、SelectedState.NOT_SELECTEDを返す。
+	 * 選択中の行番号を取得する。 未選択の場合は、SelectedState.NOT_SELECTEDを返す。
 	 * 
 	 * @return 選択中の行番号
 	 */
@@ -41,8 +47,7 @@ public class CellState {
 	}
 
 	/**
-	 * 選択中の列番号を取得する。
-	 * 未選択の場合は、SelectedState.NOT_SELECTEDを返す。
+	 * 選択中の列番号を取得する。 未選択の場合は、SelectedState.NOT_SELECTEDを返す。
 	 * 
 	 * @return 選択中の列番号
 	 */
@@ -59,9 +64,21 @@ public class CellState {
 		return selectedState;
 	}
 
+	@Override
+	public void addPuzzleListener(PuzzleListener listener) {
+		listeners.add(listener);
+	}
+
+	@Override
+	public void notifyToListeners() {
+		for (PuzzleListener listener : listeners) {
+			listener.puzzleChanged();
+		}
+	}
+
 	/**
-	 * セルの選択状態を変更する。
-	 * 未選択の場合は、(SelectedState.NOT_SELECTED, SelectedState.NOT_SELECTED)を渡す。
+	 * セルの選択状態を変更する。 未選択の場合は、(SelectedState.NOT_SELECTED,
+	 * SelectedState.NOT_SELECTED)を渡す。
 	 * 
 	 * @param row
 	 *            変更後の行
@@ -80,5 +97,8 @@ public class CellState {
 		selectedCol = col;
 		selectedState = (notSelected ? SelectedState.NOT_SELECTED
 				: SelectedState.SELECTED);
+
+		notifyToListeners();
 	}
+
 }

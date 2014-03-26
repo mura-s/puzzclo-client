@@ -22,6 +22,7 @@ import javax.swing.border.LineBorder;
 import javax.swing.table.DefaultTableModel;
 import javax.swing.table.TableCellRenderer;
 
+import muras.puzzclo.event.PuzzleListener;
 import muras.puzzclo.model.CellState;
 import muras.puzzclo.model.PuzzleBlocks;
 import muras.puzzclo.model.CellState.SelectedState;
@@ -51,7 +52,7 @@ class PuzzlePanel extends JPanel {
 	 * コンストラクタ
 	 */
 	PuzzlePanel() {
-		puzzleBlocks.arragePuzzleBlocks();
+		puzzleBlocks.initPuzzleBlocks();
 		setDragAndDrop();
 
 		add(nameLabel);
@@ -90,17 +91,20 @@ class PuzzlePanel extends JPanel {
 	 * @author muramatsu
 	 * 
 	 */
-	private class PuzzleTable extends JTable {
+	private class PuzzleTable extends JTable implements PuzzleListener {
 		private static final long serialVersionUID = 1L;
 
 		/**
-		 * コンストラクタ
+		 * コンストラクタ。 自身をリスナー(オブザーバ)として登録する。
 		 * 
 		 * @param tableModel
 		 *            テーブルモデル
 		 */
 		PuzzleTable(DefaultTableModel tableModel) {
 			super(tableModel);
+
+			puzzleBlocks.addPuzzleListener(this);
+			cellState.addPuzzleListener(this);
 		}
 
 		/**
@@ -127,6 +131,11 @@ class PuzzlePanel extends JPanel {
 
 			return c;
 		}
+
+		@Override
+		public void puzzleChanged() {
+			repaint();
+		}
 	}
 
 	/**
@@ -142,9 +151,6 @@ class PuzzlePanel extends JPanel {
 		private final Timer timer = new Timer();
 		private TimerTask task;
 
-		// ロックオブジェクト
-		Object lock = new Object();
-
 		/**
 		 * マウスが押されたら、その位置を設定し、選択状態にする。<br />
 		 * また、4秒後にドラッグ状態を自動で解除する。
@@ -155,7 +161,6 @@ class PuzzlePanel extends JPanel {
 			final int col = puzzleTable.columnAtPoint(e.getPoint());
 
 			cellState.changeSelectedState(row, col);
-			repaint();
 
 			deselectCellAfter4Sec();
 		}
@@ -171,7 +176,6 @@ class PuzzlePanel extends JPanel {
 			// TODO
 			final int score = puzzleBlocks.judgeCombo();
 
-			repaint();
 		}
 
 		/**
@@ -179,32 +183,27 @@ class PuzzlePanel extends JPanel {
 		 */
 		@Override
 		public void mouseDragged(MouseEvent e) {
-			// mouseDraggedは並行して走ってしまうのでロックする。
-			synchronized (lock) {
-
-				// NOT_SELECTEDの場合は、ブロックを交換しないようにする
-				if (cellState.getSelectedState() == SelectedState.NOT_SELECTED) {
-					return;
-				}
-
-				final Point p = e.getPoint();
-
-				// パズル上から外れたら終了
-				if (!isPosOnPuzzleTable(p.x, p.y)) {
-					finishDrag();
-					return;
-				}
-
-				final int dstRow = puzzleTable.rowAtPoint(p);
-				final int dstCol = puzzleTable.columnAtPoint(p);
-
-				// パズルブロックを入れ替える
-				puzzleBlocks.swap(cellState.getSelectedRow(),
-						cellState.getSelectedCol(), dstRow, dstCol);
-				// 入れ替わった先を選択状態にする
-				cellState.changeSelectedState(dstRow, dstCol);
-				repaint();
+			// NOT_SELECTEDの場合は、ブロックを交換しないようにする
+			if (cellState.getSelectedState() == SelectedState.NOT_SELECTED) {
+				return;
 			}
+
+			final Point p = e.getPoint();
+
+			// パズル上から外れたら終了
+			if (!isPosOnPuzzleTable(p.x, p.y)) {
+				finishDrag();
+				return;
+			}
+
+			final int dstRow = puzzleTable.rowAtPoint(p);
+			final int dstCol = puzzleTable.columnAtPoint(p);
+
+			// パズルブロックを入れ替える
+			puzzleBlocks.swap(cellState.getSelectedRow(),
+					cellState.getSelectedCol(), dstRow, dstCol);
+			// 入れ替わった先を選択状態にする
+			cellState.changeSelectedState(dstRow, dstCol);
 		}
 
 		/**
@@ -228,9 +227,9 @@ class PuzzlePanel extends JPanel {
 
 		private void finishDrag() {
 			cancelTimerTask();
+
 			cellState.changeSelectedState(CellState.NOT_SELECTED_NUM,
 					CellState.NOT_SELECTED_NUM);
-			repaint();
 		}
 
 		@Override
