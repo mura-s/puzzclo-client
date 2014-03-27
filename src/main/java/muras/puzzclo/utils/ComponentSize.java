@@ -50,11 +50,11 @@ public class ComponentSize {
 	/**
 	 * 時計のheight
 	 */
-	public static final int CLOCK_HEIGHT = 120;
+	public static final int CLOCK_HEIGHT = 80;
 	/**
 	 * 時計のfontsize
 	 */
-	public static final int CLOCK_FONTSIZE = 70;
+	public static final int CLOCK_FONTSIZE = 90;
 
 	/**
 	 * メッセージエリアのwidth
@@ -63,7 +63,7 @@ public class ComponentSize {
 	/**
 	 * メッセージエリアのheight
 	 */
-	public static final int MESSAGE_HEIGHT = 160;
+	public static final int MESSAGE_HEIGHT = 200;
 
 	/**
 	 * 入力用フィールドのwidth

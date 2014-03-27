@@ -93,7 +93,7 @@ public final class PuzzleBlocks implements PuzzleStateSubject {
 		if ((srcRow != dstRow) || (srcCol != dstCol)) {
 			Object srcCell = tableModel.getValueAt(srcRow, srcCol);
 			Object dstCell = tableModel.getValueAt(dstRow, dstCol);
-			
+
 			tableModel.setValueAt(dstCell, srcRow, srcCol);
 			tableModel.setValueAt(srcCell, dstRow, dstCol);
 		}
@@ -105,7 +105,7 @@ public final class PuzzleBlocks implements PuzzleStateSubject {
 	 * パズルの配置から、消える部分を消去し、得点を計算する。<br />
 	 * 
 	 * 消えた部分には、上からパズルをドロップし、さらに消える部分があれば消す。
-	 * この操作を繰り返し、消える部分がなくなった時点で、得点(消えた数)を合計し、returnする。<br />
+	 * この操作を繰り返し、消える部分がなくなった時点で、得点(消えた数)を合計し、TotalScoreを更新する。<br />
 	 * 
 	 * ここで、消える部分は、3個以上の同じ色のブロックが隣り合っているところとする。
 	 * 
@@ -160,19 +160,18 @@ public final class PuzzleBlocks implements PuzzleStateSubject {
 			// 更に400msec後に新しいブロックを配置する
 			Thread.sleep(400);
 			fillNewBlocks(blocks);
-			
-			// 次の消す処理までのマージン
-			Thread.sleep(400);
-			
-		} catch (InterruptedException e) {
-			e.printStackTrace();
-		}
 
-		// コンボが続く限り、再帰する
-		if (score == 0) {
-			return 0;
-		} else {
-			return (score += judgeCombo());
+			// コンボが続く限り、再帰する
+			if (score == 0) {
+				return 0;
+			} else {
+				// 次の消す処理までのマージン
+				Thread.sleep(400);
+				
+				return (score += judgeCombo());
+			}
+		} catch (InterruptedException e) {
+			throw new AssertionError(e);
 		}
 	}
 
@@ -191,10 +190,10 @@ public final class PuzzleBlocks implements PuzzleStateSubject {
 
 		return blocks;
 	}
-	
+
 	private int execDisappear(boolean[][] delMap, ImageIcon[][] blocks) {
 		int score = 0;
-		
+
 		for (int i = 0; i < PUZZLE_CELLNUM_OF_SIDE; i++) {
 			for (int j = 0; j < PUZZLE_CELLNUM_OF_SIDE; j++) {
 				if (delMap[i][j]) {
@@ -207,7 +206,7 @@ public final class PuzzleBlocks implements PuzzleStateSubject {
 		}
 
 		notifyToListeners();
-		
+
 		return score;
 	}
 

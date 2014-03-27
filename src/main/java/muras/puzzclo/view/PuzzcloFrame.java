@@ -11,6 +11,8 @@ import javax.swing.BoxLayout;
 import javax.swing.JFrame;
 import javax.swing.JPanel;
 
+import muras.puzzclo.model.TotalScore;
+
 /**
  * クライアントフレーム全体
  * 
@@ -22,12 +24,15 @@ public final class PuzzcloFrame extends JFrame {
 
 	private final String name = "パズクロ！ (Puzzle & Clocks)";
 
+	// ゲームの現在の得点
+	private final TotalScore totalScore = new TotalScore();
+	
 	// パズル部のパネル
-	private final JPanel puzzlePanel = new PuzzlePanel();
+	private final JPanel puzzlePanel = new PuzzlePanel(totalScore);
 	// 時計部のパネル
-	private final JPanel clockPanel = new ClockPanel();
+	private final JPanel clockPanel = new ClockPanel(totalScore);
 	// 操作部のパネル
-	private final JPanel controlPanel = new ControlPanel();
+	private final JPanel controlPanel = new ControlPanel(totalScore);
 
 	/**
 	 * コンストラクタ

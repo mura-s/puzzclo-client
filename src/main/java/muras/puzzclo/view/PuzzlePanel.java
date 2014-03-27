@@ -25,6 +25,7 @@ import javax.swing.table.TableCellRenderer;
 import muras.puzzclo.event.PuzzleListener;
 import muras.puzzclo.model.CellState;
 import muras.puzzclo.model.PuzzleBlocks;
+import muras.puzzclo.model.TotalScore;
 
 /**
  * パズル部分のパネル
@@ -38,6 +39,9 @@ class PuzzlePanel extends JPanel {
 	// 名称部分のラベル
 	private final JLabel nameLabel = new NameLabel("パズル");
 
+	// ゲームの現在の得点
+	private final TotalScore totalScore;
+
 	// パズル内のブロックとその処理
 	private final PuzzleBlocks puzzleBlocks = new PuzzleBlocks();
 
@@ -50,7 +54,9 @@ class PuzzlePanel extends JPanel {
 	/**
 	 * コンストラクタ
 	 */
-	PuzzlePanel() {
+	PuzzlePanel(TotalScore totalScore) {
+		this.totalScore = totalScore;
+
 		puzzleBlocks.initPuzzleBlocks();
 		setDragAndDrop();
 
@@ -149,12 +155,14 @@ class PuzzlePanel extends JPanel {
 		// ドラッグの時間制限用のタイマー
 		private final Timer timer = new Timer();
 		private TimerTask task;
-		
+
 		// パズルを消した得点
 		private int score = 0;
-		
-		// ジャッジ中かどうか。ジャッジ中ならマウスを反応しなくする。
-		private boolean judging = false;
+
+		// ドラッグ可能かどうか
+		private boolean dragEnable = true;
+		// 押されているかどうか
+		private boolean pressed = false;
 
 		/**
 		 * マウスが押されたら、その位置を設定し、選択状態にする。<br />
@@ -162,10 +170,12 @@ class PuzzlePanel extends JPanel {
 		 */
 		@Override
 		public void mousePressed(MouseEvent e) {
-			if (judging) {
+			if (!dragEnable) {
 				return;
 			}
-			
+
+			pressed = true;
+
 			final int row = puzzleTable.rowAtPoint(e.getPoint());
 			final int col = puzzleTable.columnAtPoint(e.getPoint());
 
@@ -180,21 +190,23 @@ class PuzzlePanel extends JPanel {
 		 */
 		@Override
 		public void mouseReleased(MouseEvent e) {
-			if (judging) {
+			if (!dragEnable || !pressed) {
 				return;
 			}
-			
+
 			finishDrag();
 
 			// アニメーションのために、別スレッドで動かす
 			Thread th = new Thread(new Runnable() {
 
 				public void run() {
-					judging = true;
+					dragEnable = false;
+					pressed = false;
+
 					score = puzzleBlocks.judgeCombo();
-					judging = false;
-					
-					System.out.println(score);
+					totalScore.addMyScore(score);
+
+					dragEnable = true;
 				}
 			});
 			th.start();
@@ -206,12 +218,7 @@ class PuzzlePanel extends JPanel {
 		 */
 		@Override
 		public void mouseDragged(MouseEvent e) {
-			if (judging) {
-				return;
-			}
-			
-			// NOT_SELECTEDの場合は、ブロックを交換しないようにする
-			if (!cellState.isSelected()) {
+			if (!dragEnable || !cellState.isSelected()) {
 				return;
 			}
 

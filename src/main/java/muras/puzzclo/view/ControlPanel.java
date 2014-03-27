@@ -3,6 +3,8 @@
  */
 package muras.puzzclo.view;
 
+import static muras.puzzclo.utils.ComponentSize.*;
+
 import java.awt.BorderLayout;
 import java.awt.Color;
 import java.awt.Dimension;
@@ -10,11 +12,14 @@ import java.awt.Dimension;
 import javax.swing.JButton;
 import javax.swing.JLabel;
 import javax.swing.JPanel;
+import javax.swing.JScrollPane;
 import javax.swing.JTextArea;
 import javax.swing.JTextField;
 import javax.swing.border.LineBorder;
 
-import static muras.puzzclo.utils.ComponentSize.*;
+import muras.puzzclo.event.ScoreChangeEvent;
+import muras.puzzclo.event.ScoreListener;
+import muras.puzzclo.model.TotalScore;
 
 /**
  * ユーザが操作を行うためのパネル
@@ -26,14 +31,16 @@ class ControlPanel extends JPanel {
 	private static final long serialVersionUID = 1L;
 
 	// メッセージ表示部
-	private final JPanel messagePanel = new MessagePanel();
+	private final MessagePanel messagePanel = new MessagePanel();
 	// 入力部
 	private final JPanel inputPanel = new InputPanel();
 
 	/**
 	 * コンストラクタ
 	 */
-	ControlPanel() {
+	ControlPanel(TotalScore totalScore) {
+		totalScore.addScoreListener(messagePanel);
+
 		add(messagePanel);
 		add(inputPanel);
 	}
@@ -44,7 +51,7 @@ class ControlPanel extends JPanel {
 	 * @author muramatsu
 	 * 
 	 */
-	private static class MessagePanel extends JPanel {
+	private static class MessagePanel extends JPanel implements ScoreListener {
 		private static final long serialVersionUID = 1L;
 
 		// 名称部分のラベル
@@ -58,16 +65,35 @@ class ControlPanel extends JPanel {
 		MessagePanel() {
 			setLayout(new BorderLayout());
 			add(BorderLayout.NORTH, nameLabel);
-			add(BorderLayout.SOUTH, messageArea);
+
+			// スクロールバーをつける
+			JScrollPane sp = new JScrollPane(messageArea,
+					JScrollPane.VERTICAL_SCROLLBAR_ALWAYS,
+					JScrollPane.HORIZONTAL_SCROLLBAR_AS_NEEDED);
+			sp.setPreferredSize(new Dimension(MESSAGE_WIDTH, MESSAGE_HEIGHT));
+
+			add(BorderLayout.SOUTH, sp);
 		}
 
 		private JTextArea createMessageArea() {
-			JTextArea messageArea = new JTextArea();
-			messageArea.setPreferredSize(new Dimension(MESSAGE_WIDTH,
-					MESSAGE_HEIGHT));
+			JTextArea messageArea = new JTextArea() {
+				private static final long serialVersionUID = 1L;
+				
+				// 自動スクロールの設定
+				@Override
+				public void append(String str) {
+					super.append(str);
+					setCaretPosition(getDocument().getLength());
+				}
+			};
+
 			messageArea.setBorder(new LineBorder(Color.DARK_GRAY));
 			messageArea.setEditable(false);
 			return messageArea;
+		}
+
+		public void scoreChanged(ScoreChangeEvent e) {
+			messageArea.append("現在のスコア: " + e.getSource().getMyScore() + "\n");
 		}
 	}
 
