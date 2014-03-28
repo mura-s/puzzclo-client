@@ -33,11 +33,11 @@ public final class PuzzcloFrame extends JFrame {
 	private final PuzzcloState puzzcloState = new PuzzcloState();
 	
 	// パズル部のパネル
-	private final JPanel puzzlePanel = new PuzzlePanel(totalScore, puzzcloState);
+	private final PuzzlePanel puzzlePanel = new PuzzlePanel(totalScore, puzzcloState);
 	// 時計部のパネル
-	private final JPanel clockPanel = new ClockPanel(totalScore, puzzcloState);
+	private final ClockPanel clockPanel = new ClockPanel(totalScore);
 	// 操作部のパネル
-	private final JPanel controlPanel = new ControlPanel(totalScore, puzzcloState);
+	private final ControlPanel controlPanel = new ControlPanel(totalScore, puzzcloState);
 
 	/**
 	 * コンストラクタ
@@ -47,6 +47,7 @@ public final class PuzzcloFrame extends JFrame {
 		setTitle(title);
 		setBounds(FRAME_XPOS, FRAME_YPOS, FRAME_WIDTH, FRAME_HEIGHT);
 		setResizable(false);
+		getRootPane().setDefaultButton(controlPanel.getSubmitButton());
 
 		// レイアウト作成
 		setLayout(new GridLayout(1, 2));

@@ -40,7 +40,11 @@ class ControlPanel extends JPanel {
 	// メッセージ表示部
 	private final MessagePanel messagePanel = new MessagePanel();
 	// 入力部
-	private final JPanel inputPanel = new InputPanel();
+	private final InputPanel inputPanel = new InputPanel();
+
+	// ゲームの得点
+	private final TotalScore totalScore;
+
 	// ゲームの状態
 	private final PuzzcloState puzzcloState;
 
@@ -48,6 +52,7 @@ class ControlPanel extends JPanel {
 	 * コンストラクタ
 	 */
 	ControlPanel(TotalScore totalScore, PuzzcloState puzzcloState) {
+		this.totalScore = totalScore;
 		totalScore.addScoreListener(messagePanel);
 
 		this.puzzcloState = puzzcloState;
@@ -57,13 +62,17 @@ class ControlPanel extends JPanel {
 		add(inputPanel);
 	}
 
+	JButton getSubmitButton() {
+		return inputPanel.submitButton;
+	}
+
 	/**
 	 * メッセージ出力用のパネル
 	 * 
 	 * @author muramatsu
 	 * 
 	 */
-	private static class MessagePanel extends JPanel implements ScoreListener,
+	private class MessagePanel extends JPanel implements ScoreListener,
 			GameStateListener {
 		private static final long serialVersionUID = 1L;
 
@@ -107,6 +116,10 @@ class ControlPanel extends JPanel {
 
 		public void scoreChanged(ScoreChangeEvent e) {
 			messageArea.append(e.getMessage());
+
+			if (e.getSource().getMyScore() == TotalScore.MAX_SCORE) {
+				puzzcloState.setGameState(GameState.GAME_CLEAR);
+			}
 		}
 
 		public void gameStateChanged(GameStateChangeEvent e) {
@@ -142,26 +155,22 @@ class ControlPanel extends JPanel {
 			add(BorderLayout.NORTH, nameLabel);
 			add(BorderLayout.WEST, inputField);
 			add(BorderLayout.EAST, submitButton);
-			
+
 			submitButton.addActionListener(new ActionListener() {
 				public void actionPerformed(ActionEvent e) {
 					String text = inputField.getText();
-					
-					if (text.equals("q") || text.equals("Q")) {
-						puzzcloState.setGameState(GameState.INIT);
-					}
-					
-					switch (puzzcloState.getGameState()) {
-					case INIT:
+
+					if (puzzcloState.getGameState() == GameState.INIT) {
 						if (text.equals("1")) {
 							puzzcloState.setGameState(GameState.DURING_GAME);
 						}
-						break;
-					
-					default:
-						throw new AssertionError("ここには到達しない");
+					} else {
+						if (text.equals("q") || text.equals("Q")) {
+							totalScore.initScore();
+							puzzcloState.setGameState(GameState.INIT);
+						}
 					}
-					
+
 					// テキストフィールドを空にする
 					inputField.setText("");
 				}
@@ -182,6 +191,7 @@ class ControlPanel extends JPanel {
 					BUTTON_HEIGHT));
 			return submitButton;
 		}
+
 	}
 
 }

@@ -22,9 +22,12 @@ import javax.swing.border.LineBorder;
 import javax.swing.table.DefaultTableModel;
 import javax.swing.table.TableCellRenderer;
 
+import muras.puzzclo.event.GameStateChangeEvent;
+import muras.puzzclo.event.GameStateListener;
 import muras.puzzclo.event.PuzzleListener;
 import muras.puzzclo.model.CellState;
 import muras.puzzclo.model.PuzzcloState;
+import muras.puzzclo.model.PuzzcloState.GameState;
 import muras.puzzclo.model.PuzzleBlocks;
 import muras.puzzclo.model.TotalScore;
 
@@ -34,7 +37,7 @@ import muras.puzzclo.model.TotalScore;
  * @author muramatsu
  * 
  */
-class PuzzlePanel extends JPanel {
+class PuzzlePanel extends JPanel implements GameStateListener {
 	private static final long serialVersionUID = 1L;
 
 	// 名称部分のラベル
@@ -42,8 +45,6 @@ class PuzzlePanel extends JPanel {
 
 	// ゲームの現在の得点
 	private final TotalScore totalScore;
-	// ゲームの状態
-	private final PuzzcloState puzzcloState;
 
 	// パズル内のブロックとその処理
 	private final PuzzleBlocks puzzleBlocks = new PuzzleBlocks();
@@ -54,14 +55,20 @@ class PuzzlePanel extends JPanel {
 	// パズル用のテーブル
 	private final JTable puzzleTable = createPuzzleTable();
 
+	// ドラッグ可能かどうか
+	private boolean dragEnable = false;
+	// 押されているかどうか
+	private boolean pressed = false;
+
 	/**
 	 * コンストラクタ
 	 */
 	PuzzlePanel(TotalScore totalScore, PuzzcloState puzzcloState) {
 		this.totalScore = totalScore;
-		this.puzzcloState = puzzcloState;
+		
+		puzzcloState.addGameStateListener(this);
 
-		puzzleBlocks.initPuzzleBlocks();
+		puzzleBlocks.createPuzzleBlocks();
 		setDragAndDrop();
 
 		add(nameLabel);
@@ -94,6 +101,17 @@ class PuzzlePanel extends JPanel {
 		puzzleTable.addMouseMotionListener(dragListener);
 	}
 
+	@Override
+	public void gameStateChanged(GameStateChangeEvent e) {
+		if (e.getSource() == GameState.DURING_GAME) {
+			dragEnable = true;
+			puzzleBlocks.arrangePuzzleBlocks();
+		} else {
+			dragEnable = false;
+			puzzleBlocks.initPuzzleBlocks();
+		}
+	}
+
 	/**
 	 * パズルテーブル用のJTable
 	 * 
@@ -112,7 +130,6 @@ class PuzzlePanel extends JPanel {
 		PuzzleTable(DefaultTableModel tableModel) {
 			super(tableModel);
 
-			puzzleBlocks.addPuzzleListener(this);
 			cellState.addPuzzleListener(this);
 		}
 
@@ -160,14 +177,6 @@ class PuzzlePanel extends JPanel {
 		private final Timer timer = new Timer();
 		private TimerTask task;
 
-		// パズルを消した得点
-		private int score = 0;
-
-		// ドラッグ可能かどうか
-		private boolean dragEnable = true;
-		// 押されているかどうか
-		private boolean pressed = false;
-
 		/**
 		 * マウスが押されたら、その位置を設定し、選択状態にする。<br />
 		 * また、4秒後にドラッグ状態を自動で解除する。
@@ -202,12 +211,11 @@ class PuzzlePanel extends JPanel {
 
 			// アニメーションのために、別スレッドで動かす
 			Thread th = new Thread(new Runnable() {
-
 				public void run() {
 					dragEnable = false;
 					pressed = false;
 
-					score = puzzleBlocks.judgeCombo();
+					int score = puzzleBlocks.judgeCombo();
 					totalScore.addLastScore(score);
 
 					dragEnable = true;
@@ -257,14 +265,10 @@ class PuzzlePanel extends JPanel {
 			timer.schedule(task, 4000);
 		}
 
-		private void cancelTimerTask() {
+		private void finishDrag() {
 			if (task != null) {
 				task.cancel();
 			}
-		}
-
-		private void finishDrag() {
-			cancelTimerTask();
 
 			cellState.changeSelectedState(CellState.NOT_SELECTED_NUM,
 					CellState.NOT_SELECTED_NUM);

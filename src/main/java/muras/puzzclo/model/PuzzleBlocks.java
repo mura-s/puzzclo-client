@@ -5,13 +5,9 @@ package muras.puzzclo.model;
 
 import static muras.puzzclo.utils.ComponentSize.*;
 
-import java.util.ArrayList;
-import java.util.List;
-
 import javax.swing.ImageIcon;
 import javax.swing.table.DefaultTableModel;
 
-import muras.puzzclo.event.PuzzleListener;
 import muras.puzzclo.utils.PuzzleBlockColor;
 
 /**
@@ -28,8 +24,6 @@ public final class PuzzleBlocks {
 	private final DefaultTableModel tableModel = new PuzzleTableModel(
 			new String[PUZZLE_CELLNUM_OF_SIDE], 0);
 
-	private final List<PuzzleListener> listeners = new ArrayList<>();
-
 	/**
 	 * パズル用のテーブルモデルのゲッター
 	 * 
@@ -39,34 +33,37 @@ public final class PuzzleBlocks {
 		return tableModel;
 	}
 
-	
-	public void addPuzzleListener(PuzzleListener listener) {
-		listeners.add(listener);
+	/**
+	 * ブロックが並んでいない状態で作成する。
+	 */
+	public void createPuzzleBlocks() {
+		final ImageIcon[][] tmpBlocks = new ImageIcon[PUZZLE_CELLNUM_OF_SIDE][PUZZLE_CELLNUM_OF_SIDE];
+
+		for (ImageIcon[] nullBlockRow : tmpBlocks) {
+			tableModel.addRow(nullBlockRow);
+		}
 	}
 
-	
-	public void notifyToListeners() {
-		for (PuzzleListener listener : listeners) {
-			listener.puzzleChanged();
+	/**
+	 * パズルテーブル上のブロックを空の状態に初期化する。
+	 */
+	public void initPuzzleBlocks() {
+		for (int i = 0; i < PUZZLE_CELLNUM_OF_SIDE; i++) {
+			for (int j = 0; j < PUZZLE_CELLNUM_OF_SIDE; j++) {
+				tableModel.setValueAt(null, i, j);
+			}
 		}
 	}
 
 	/**
 	 * パズルテーブル上にブロックを配置する。
 	 */
-	public void initPuzzleBlocks() {
-		final ImageIcon[][] tmpBlocks = new ImageIcon[PUZZLE_CELLNUM_OF_SIDE][PUZZLE_CELLNUM_OF_SIDE];
-
-		for (ImageIcon[] blockRow : tmpBlocks) {
-			// セルにアイコンを代入するために通常のfor文を使用
-			for (int i = 0; i < blockRow.length; i++) {
-				blockRow[i] = PuzzleBlockColor.getRandomColor().getBlock();
+	public void arrangePuzzleBlocks() {
+		for (int i = 0; i < PUZZLE_CELLNUM_OF_SIDE; i++) {
+			for (int j = 0; j < PUZZLE_CELLNUM_OF_SIDE; j++) {
+				ImageIcon block = PuzzleBlockColor.getRandomColor().getBlock();
+				tableModel.setValueAt(block, i, j);
 			}
-		}
-
-		// テーブルモデルにアイコンをセット
-		for (ImageIcon[] blockRow : tmpBlocks) {
-			tableModel.addRow(blockRow);
 		}
 	}
 
@@ -97,8 +94,6 @@ public final class PuzzleBlocks {
 			tableModel.setValueAt(dstCell, srcRow, srcCol);
 			tableModel.setValueAt(srcCell, dstRow, dstCol);
 		}
-
-		notifyToListeners();
 	}
 
 	/**
@@ -167,7 +162,7 @@ public final class PuzzleBlocks {
 			} else {
 				// 次の消す処理までのマージン
 				Thread.sleep(400);
-				
+
 				return (score += judgeCombo());
 			}
 		} catch (InterruptedException e) {
@@ -205,8 +200,6 @@ public final class PuzzleBlocks {
 			}
 		}
 
-		notifyToListeners();
-
 		return score;
 	}
 
@@ -236,8 +229,6 @@ public final class PuzzleBlocks {
 				}
 			}
 		}
-
-		notifyToListeners();
 	}
 
 	/**
@@ -257,8 +248,6 @@ public final class PuzzleBlocks {
 				}
 			}
 		}
-
-		notifyToListeners();
 	}
 
 	/**

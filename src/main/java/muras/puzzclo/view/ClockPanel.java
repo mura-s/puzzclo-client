@@ -20,7 +20,6 @@ import javax.swing.JLabel;
 import javax.swing.JPanel;
 import javax.swing.border.LineBorder;
 
-import muras.puzzclo.model.PuzzcloState;
 import muras.puzzclo.model.TotalScore;
 
 /**
@@ -37,8 +36,6 @@ class ClockPanel extends JPanel {
 
 	// ゲームの現在の得点
 	private final TotalScore totalScore;
-	// ゲームの状態
-	private final PuzzcloState puzzcloState;
 
 	// 時計部分のパネル
 	private final Clock clock = createClock();
@@ -46,9 +43,8 @@ class ClockPanel extends JPanel {
 	/**
 	 * コンストラクタ
 	 */
-	ClockPanel(TotalScore totalScore, PuzzcloState puzzcloState) {
+	ClockPanel(TotalScore totalScore) {
 		this.totalScore = totalScore;
-		this.puzzcloState = puzzcloState;
 
 		add(nameLabel);
 		add(clock);

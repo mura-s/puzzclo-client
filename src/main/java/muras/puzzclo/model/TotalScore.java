@@ -9,6 +9,8 @@ import java.util.List;
 import muras.puzzclo.event.ScoreChangeEvent;
 import muras.puzzclo.event.ScoreListener;
 
+import static muras.puzzclo.utils.PuzzcloMessages.*;
+
 /**
  * ゲームの現在の得点を表す。
  * 
@@ -35,15 +37,33 @@ public final class TotalScore {
 	public int getMyScore() {
 		return myScore;
 	}
-
+	
+	/**
+	 * 得点を加算して、オブザーバにnotify
+	 * 
+	 * @param score 得点
+	 */
 	public void addLastScore(int score) {
 		lastOneScore = score;
 		setMyScore(myScore + score);
 	}
 
+	/**
+	 * 得点を減算して、オブザーバにnotify
+	 * 
+	 * @param score 得点
+	 */
 	public void subLastScore(int score) {
 		lastOneScore = score;
 		setMyScore(myScore - score);
+	}
+
+	/**
+	 * notifyはせずに、初期化
+	 */
+	public void initScore() {
+		lastOneScore = 0;
+		myScore = 0;
 	}
 
 	private void setMyScore(int myScore) {
@@ -64,13 +84,8 @@ public final class TotalScore {
 
 	public void notifyToListeners() {
 		for (ScoreListener listener : listeners) {
-			listener.scoreChanged(new ScoreChangeEvent(this, lastOneScore
-					+ "点獲得しました。\n現在のスコア: " + myScore + "\n\n"));
-
-			if (myScore == MAX_SCORE) {
-				listener.scoreChanged(new ScoreChangeEvent(this, "ゲームクリア！\n\n"));
-			}
+			listener.scoreChanged(new ScoreChangeEvent(this, getScoreMessage(
+					lastOneScore, myScore)));
 		}
 	}
-
 }

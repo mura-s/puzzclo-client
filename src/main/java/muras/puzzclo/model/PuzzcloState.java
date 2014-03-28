@@ -33,10 +33,6 @@ public final class PuzzcloState {
 		}
 
 		private String message;
-
-		public String getMessage() {
-			return message;
-		}
 	}
 
 	private GameState gameState;
@@ -60,7 +56,7 @@ public final class PuzzcloState {
 	public void notifyToListeners() {
 		for (GameStateListener listener : listeners) {
 			listener.gameStateChanged(new GameStateChangeEvent(gameState,
-					gameState.getMessage()));
+					gameState.message));
 		}
 	}
 }
