@@ -3,25 +3,25 @@
  */
 package muras.puzzclo.event;
 
-import muras.puzzclo.model.TotalScore;
+import muras.puzzclo.model.PuzzcloState.GameState;
 
 /**
- * 得点の変化に関するイベント
+ * ゲーム全体の状態変化に関するイベント
  * 
  * @author muramatsu
  * 
  */
-public class ScoreChangeEvent {
-	private final TotalScore source;
+public class GameStateChangeEvent {
+	private final GameState source;
 
 	private final String message;
 
-	public ScoreChangeEvent(TotalScore source, String message) {
+	public GameStateChangeEvent(GameState source, String message) {
 		this.source = source;
 		this.message = message;
 	}
 
-	public TotalScore getSource() {
+	public GameState getSource() {
 		return source;
 	}
 

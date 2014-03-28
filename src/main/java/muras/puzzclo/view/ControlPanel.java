@@ -4,10 +4,13 @@
 package muras.puzzclo.view;
 
 import static muras.puzzclo.utils.ComponentSize.*;
+import static muras.puzzclo.utils.PuzzcloMessages.*;
 
 import java.awt.BorderLayout;
 import java.awt.Color;
 import java.awt.Dimension;
+import java.awt.event.ActionEvent;
+import java.awt.event.ActionListener;
 
 import javax.swing.JButton;
 import javax.swing.JLabel;
@@ -17,8 +20,12 @@ import javax.swing.JTextArea;
 import javax.swing.JTextField;
 import javax.swing.border.LineBorder;
 
+import muras.puzzclo.event.GameStateChangeEvent;
+import muras.puzzclo.event.GameStateListener;
 import muras.puzzclo.event.ScoreChangeEvent;
 import muras.puzzclo.event.ScoreListener;
+import muras.puzzclo.model.PuzzcloState;
+import muras.puzzclo.model.PuzzcloState.GameState;
 import muras.puzzclo.model.TotalScore;
 
 /**
@@ -34,12 +41,17 @@ class ControlPanel extends JPanel {
 	private final MessagePanel messagePanel = new MessagePanel();
 	// 入力部
 	private final JPanel inputPanel = new InputPanel();
+	// ゲームの状態
+	private final PuzzcloState puzzcloState;
 
 	/**
 	 * コンストラクタ
 	 */
-	ControlPanel(TotalScore totalScore) {
+	ControlPanel(TotalScore totalScore, PuzzcloState puzzcloState) {
 		totalScore.addScoreListener(messagePanel);
+
+		this.puzzcloState = puzzcloState;
+		puzzcloState.addGameStateListener(messagePanel);
 
 		add(messagePanel);
 		add(inputPanel);
@@ -51,7 +63,8 @@ class ControlPanel extends JPanel {
 	 * @author muramatsu
 	 * 
 	 */
-	private static class MessagePanel extends JPanel implements ScoreListener {
+	private static class MessagePanel extends JPanel implements ScoreListener,
+			GameStateListener {
 		private static final long serialVersionUID = 1L;
 
 		// 名称部分のラベル
@@ -78,7 +91,7 @@ class ControlPanel extends JPanel {
 		private JTextArea createMessageArea() {
 			JTextArea messageArea = new JTextArea() {
 				private static final long serialVersionUID = 1L;
-				
+
 				// 自動スクロールの設定
 				@Override
 				public void append(String str) {
@@ -93,7 +106,15 @@ class ControlPanel extends JPanel {
 		}
 
 		public void scoreChanged(ScoreChangeEvent e) {
-			messageArea.append("現在のスコア: " + e.getSource().getMyScore() + "\n");
+			messageArea.append(e.getMessage());
+		}
+
+		public void gameStateChanged(GameStateChangeEvent e) {
+			if (e.getSource() == GameState.INIT) {
+				messageArea.append(TITLE_MESSAGE);
+			}
+
+			messageArea.append(e.getMessage());
 		}
 	}
 
@@ -103,7 +124,7 @@ class ControlPanel extends JPanel {
 	 * @author muramatsu
 	 * 
 	 */
-	private static class InputPanel extends JPanel {
+	private class InputPanel extends JPanel {
 		private static final long serialVersionUID = 1L;
 
 		// 名称部分のラベル
@@ -121,6 +142,30 @@ class ControlPanel extends JPanel {
 			add(BorderLayout.NORTH, nameLabel);
 			add(BorderLayout.WEST, inputField);
 			add(BorderLayout.EAST, submitButton);
+			
+			submitButton.addActionListener(new ActionListener() {
+				public void actionPerformed(ActionEvent e) {
+					String text = inputField.getText();
+					
+					if (text.equals("q") || text.equals("Q")) {
+						puzzcloState.setGameState(GameState.INIT);
+					}
+					
+					switch (puzzcloState.getGameState()) {
+					case INIT:
+						if (text.equals("1")) {
+							puzzcloState.setGameState(GameState.DURING_GAME);
+						}
+						break;
+					
+					default:
+						throw new AssertionError("ここには到達しない");
+					}
+					
+					// テキストフィールドを空にする
+					inputField.setText("");
+				}
+			});
 		}
 
 		private JTextField createInputField() {

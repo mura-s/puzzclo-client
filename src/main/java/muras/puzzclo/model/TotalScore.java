@@ -15,10 +15,12 @@ import muras.puzzclo.event.ScoreListener;
  * @author muramatsu
  * 
  */
-public class TotalScore {
+public final class TotalScore {
 	public static final int MAX_SCORE = 100;
 
 	private int myScore = 0;
+
+	private int lastOneScore = 0;
 
 	private final List<ScoreListener> listeners = new ArrayList<>();
 
@@ -34,11 +36,13 @@ public class TotalScore {
 		return myScore;
 	}
 
-	public void addMyScore(int score) {
+	public void addLastScore(int score) {
+		lastOneScore = score;
 		setMyScore(myScore + score);
 	}
 
-	public void subMyScore(int score) {
+	public void subLastScore(int score) {
+		lastOneScore = score;
 		setMyScore(myScore - score);
 	}
 
@@ -60,7 +64,12 @@ public class TotalScore {
 
 	public void notifyToListeners() {
 		for (ScoreListener listener : listeners) {
-			listener.scoreChanged(new ScoreChangeEvent(this));
+			listener.scoreChanged(new ScoreChangeEvent(this, lastOneScore
+					+ "点獲得しました。\n現在のスコア: " + myScore + "\n\n"));
+
+			if (myScore == MAX_SCORE) {
+				listener.scoreChanged(new ScoreChangeEvent(this, "ゲームクリア！\n\n"));
+			}
 		}
 	}
 

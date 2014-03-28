@@ -10,6 +10,8 @@ import java.awt.Dimension;
 import java.awt.Font;
 import java.awt.FontMetrics;
 import java.awt.Graphics;
+import java.awt.event.ActionEvent;
+import java.awt.event.ActionListener;
 import java.text.DateFormat;
 import java.text.SimpleDateFormat;
 import java.util.Calendar;
@@ -18,6 +20,7 @@ import javax.swing.JLabel;
 import javax.swing.JPanel;
 import javax.swing.border.LineBorder;
 
+import muras.puzzclo.model.PuzzcloState;
 import muras.puzzclo.model.TotalScore;
 
 /**
@@ -34,6 +37,8 @@ class ClockPanel extends JPanel {
 
 	// ゲームの現在の得点
 	private final TotalScore totalScore;
+	// ゲームの状態
+	private final PuzzcloState puzzcloState;
 
 	// 時計部分のパネル
 	private final Clock clock = createClock();
@@ -41,8 +46,9 @@ class ClockPanel extends JPanel {
 	/**
 	 * コンストラクタ
 	 */
-	ClockPanel(TotalScore totalScore) {
+	ClockPanel(TotalScore totalScore, PuzzcloState puzzcloState) {
 		this.totalScore = totalScore;
+		this.puzzcloState = puzzcloState;
 
 		add(nameLabel);
 		add(clock);
@@ -78,14 +84,27 @@ class ClockPanel extends JPanel {
 
 		final Font font = new Font(Font.SANS_SERIF, Font.BOLD, CLOCK_FONTSIZE);
 
-		/**
-		 * 1秒毎に時計の時間を更新する。
-		 */
+		// デフォルトの時計の色。薄いグレー。
+		final Color defaultColor = new Color(240, 240, 240);
+
+		// 時計の点滅
+		boolean blinkFlag = true;
+
 		@Override
 		public void run() {
+			// 点滅のタイマーをセット
+			javax.swing.Timer blinkTimer = new javax.swing.Timer(200,
+					new ActionListener() {
+						public void actionPerformed(ActionEvent e) {
+							blinkFlag = !blinkFlag;
+							repaint();
+						}
+					});
+			blinkTimer.start();
+
+			// 1秒毎に時計の時間を更新する。
 			while (true) {
 				time = df.format(Calendar.getInstance().getTime());
-				repaint();
 				try {
 					Thread.sleep(1000);
 				} catch (InterruptedException e) {
@@ -101,26 +120,29 @@ class ClockPanel extends JPanel {
 		protected void paintComponent(Graphics g) {
 			super.paintComponent(g);
 			g.setFont(font);
-			
-			// 100点以上なら、色を赤くする
-			if (totalScore.getMyScore() < TotalScore.MAX_SCORE) {
-				g.setColor(Color.LIGHT_GRAY);
-			} else {
-				g.setColor(Color.RED);
-			}
 
-			// パネルの真ん中に時計を表示
+			// パネルの真ん中の位置を取得
 			FontMetrics fm = g.getFontMetrics();
 			int x = (getWidth() - fm.stringWidth(time)) / 2;
 			int y = (getHeight() + fm.getAscent() - fm.getDescent()) / 2;
-			g.drawString(time, x, y);
 
-			// scoreに応じて、時計を出現させる
-			g.setColor(Color.WHITE);
-			double percentScore = totalScore.getMyScore()
-					/ (double) TotalScore.MAX_SCORE;
-			int closeHeight = (int) (CLOCK_HEIGHT - (CLOCK_HEIGHT * percentScore));
-			g.fillRect(0, 0, CLOCK_WIDTH, closeHeight);
+			if (totalScore.getMyScore() < TotalScore.MAX_SCORE) {
+				g.setColor(defaultColor);
+				g.drawString(time, x, y);
+
+				// scoreに応じて、時計を出現させる
+				g.setColor(Color.WHITE);
+				double percentScore = totalScore.getMyScore()
+						/ (double) TotalScore.MAX_SCORE;
+				int closeHeight = (int) (CLOCK_HEIGHT - (CLOCK_HEIGHT * percentScore));
+				g.fillRect(0, 0, CLOCK_WIDTH, closeHeight);
+			} else {
+				g.setColor(Color.RED);
+				if (blinkFlag) {
+					g.drawString(time, x, y);
+				}
+			}
+
 		}
 	}
 

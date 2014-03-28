@@ -16,7 +16,7 @@ import muras.puzzclo.event.PuzzleListener;
  * @author muramatsu
  * 
  */
-public class CellState implements PuzzleStateSubject {
+public class CellState {
 
 	public static final int NOT_SELECTED_NUM = -1;
 
@@ -54,12 +54,10 @@ public class CellState implements PuzzleStateSubject {
 		return selected;
 	}
 
-	@Override
 	public void addPuzzleListener(PuzzleListener listener) {
 		listeners.add(listener);
 	}
 
-	@Override
 	public void notifyToListeners() {
 		for (PuzzleListener listener : listeners) {
 			listener.puzzleChanged();

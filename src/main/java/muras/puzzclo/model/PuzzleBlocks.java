@@ -21,7 +21,7 @@ import muras.puzzclo.utils.PuzzleBlockColor;
  * @author muramatsu
  * 
  */
-public final class PuzzleBlocks implements PuzzleStateSubject {
+public final class PuzzleBlocks {
 
 	// パズル用のテーブルモデル(PUZZLE_NUM_ROWS行分確保)
 	// ブロックの配置を保持
@@ -39,12 +39,12 @@ public final class PuzzleBlocks implements PuzzleStateSubject {
 		return tableModel;
 	}
 
-	@Override
+	
 	public void addPuzzleListener(PuzzleListener listener) {
 		listeners.add(listener);
 	}
 
-	@Override
+	
 	public void notifyToListeners() {
 		for (PuzzleListener listener : listeners) {
 			listener.puzzleChanged();

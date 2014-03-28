@@ -24,6 +24,7 @@ import javax.swing.table.TableCellRenderer;
 
 import muras.puzzclo.event.PuzzleListener;
 import muras.puzzclo.model.CellState;
+import muras.puzzclo.model.PuzzcloState;
 import muras.puzzclo.model.PuzzleBlocks;
 import muras.puzzclo.model.TotalScore;
 
@@ -41,6 +42,8 @@ class PuzzlePanel extends JPanel {
 
 	// ゲームの現在の得点
 	private final TotalScore totalScore;
+	// ゲームの状態
+	private final PuzzcloState puzzcloState;
 
 	// パズル内のブロックとその処理
 	private final PuzzleBlocks puzzleBlocks = new PuzzleBlocks();
@@ -54,8 +57,9 @@ class PuzzlePanel extends JPanel {
 	/**
 	 * コンストラクタ
 	 */
-	PuzzlePanel(TotalScore totalScore) {
+	PuzzlePanel(TotalScore totalScore, PuzzcloState puzzcloState) {
 		this.totalScore = totalScore;
+		this.puzzcloState = puzzcloState;
 
 		puzzleBlocks.initPuzzleBlocks();
 		setDragAndDrop();
@@ -204,7 +208,7 @@ class PuzzlePanel extends JPanel {
 					pressed = false;
 
 					score = puzzleBlocks.judgeCombo();
-					totalScore.addMyScore(score);
+					totalScore.addLastScore(score);
 
 					dragEnable = true;
 				}
