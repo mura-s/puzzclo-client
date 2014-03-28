@@ -65,6 +65,10 @@ class ControlPanel extends JPanel {
 	JButton getSubmitButton() {
 		return inputPanel.submitButton;
 	}
+	
+	JTextField getInputField() {
+		return inputPanel.inputField;
+	}
 
 	/**
 	 * メッセージ出力用のパネル
