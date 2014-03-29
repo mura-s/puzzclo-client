@@ -1,11 +1,11 @@
 /*
  * Copyright (C) 2014 Seiya Muramatsu. All rights reserved.
  */
-package muras.puzzclo;
+package muras.puzzclo.client;
 
 import javax.swing.JFrame;
 
-import muras.puzzclo.view.PuzzcloFrame;
+import muras.puzzclo.client.view.PuzzcloFrame;
 
 /**
  * クライアント起動用のメインクラス

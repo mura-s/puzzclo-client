@@ -1,12 +1,13 @@
 /*
  * Copyright (C) 2014 Seiya Muramatsu. All rights reserved.
  */
-package muras.puzzclo.view;
+package muras.puzzclo.client.view;
 
 import java.awt.Dimension;
+
 import javax.swing.JLabel;
 
-import static muras.puzzclo.utils.ComponentSize.*;
+import static muras.puzzclo.client.utils.ComponentSize.*;
 
 /**
  * パネルに配置する名称のラベル

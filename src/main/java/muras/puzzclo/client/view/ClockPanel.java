@@ -1,9 +1,9 @@
 /*
  * Copyright (C) 2014 Seiya Muramatsu. All rights reserved.
  */
-package muras.puzzclo.view;
+package muras.puzzclo.client.view;
 
-import static muras.puzzclo.utils.ComponentSize.*;
+import static muras.puzzclo.client.utils.ComponentSize.*;
 
 import java.awt.Color;
 import java.awt.Dimension;
@@ -20,7 +20,7 @@ import javax.swing.JLabel;
 import javax.swing.JPanel;
 import javax.swing.border.LineBorder;
 
-import muras.puzzclo.model.TotalScore;
+import muras.puzzclo.client.model.TotalScore;
 
 /**
  * 時計部分のパネル

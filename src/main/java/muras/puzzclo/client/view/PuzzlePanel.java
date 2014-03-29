@@ -1,9 +1,9 @@
 /*
  * Copyright (C) 2014 Seiya Muramatsu. All rights reserved.
  */
-package muras.puzzclo.view;
+package muras.puzzclo.client.view;
 
-import static muras.puzzclo.utils.ComponentSize.*;
+import static muras.puzzclo.client.utils.ComponentSize.*;
 
 import java.awt.Color;
 import java.awt.Component;
@@ -22,14 +22,14 @@ import javax.swing.border.LineBorder;
 import javax.swing.table.DefaultTableModel;
 import javax.swing.table.TableCellRenderer;
 
-import muras.puzzclo.event.GameStateChangeEvent;
-import muras.puzzclo.event.GameStateListener;
-import muras.puzzclo.event.PuzzleListener;
-import muras.puzzclo.model.CellState;
-import muras.puzzclo.model.PuzzcloState;
-import muras.puzzclo.model.PuzzcloState.GameState;
-import muras.puzzclo.model.PuzzleBlocks;
-import muras.puzzclo.model.TotalScore;
+import muras.puzzclo.client.event.GameStateChangeEvent;
+import muras.puzzclo.client.event.GameStateListener;
+import muras.puzzclo.client.event.PuzzleListener;
+import muras.puzzclo.client.model.CellState;
+import muras.puzzclo.client.model.PuzzcloState;
+import muras.puzzclo.client.model.PuzzleBlocks;
+import muras.puzzclo.client.model.TotalScore;
+import muras.puzzclo.client.model.PuzzcloState.GameState;
 
 /**
  * パズル部分のパネル

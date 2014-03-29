@@ -1,10 +1,10 @@
 /*
  * Copyright (C) 2014 Seiya Muramatsu. All rights reserved.
  */
-package muras.puzzclo.view;
+package muras.puzzclo.client.view;
 
-import static muras.puzzclo.utils.ComponentSize.*;
-import static muras.puzzclo.utils.PuzzcloMessages.*;
+import static muras.puzzclo.client.utils.ComponentSize.*;
+import static muras.puzzclo.client.utils.PuzzcloMessages.*;
 
 import java.awt.BorderLayout;
 import java.awt.Color;
@@ -20,13 +20,13 @@ import javax.swing.JTextArea;
 import javax.swing.JTextField;
 import javax.swing.border.LineBorder;
 
-import muras.puzzclo.event.GameStateChangeEvent;
-import muras.puzzclo.event.GameStateListener;
-import muras.puzzclo.event.ScoreChangeEvent;
-import muras.puzzclo.event.ScoreListener;
-import muras.puzzclo.model.PuzzcloState;
-import muras.puzzclo.model.PuzzcloState.GameState;
-import muras.puzzclo.model.TotalScore;
+import muras.puzzclo.client.event.GameStateChangeEvent;
+import muras.puzzclo.client.event.GameStateListener;
+import muras.puzzclo.client.event.ScoreChangeEvent;
+import muras.puzzclo.client.event.ScoreListener;
+import muras.puzzclo.client.model.PuzzcloState;
+import muras.puzzclo.client.model.TotalScore;
+import muras.puzzclo.client.model.PuzzcloState.GameState;
 
 /**
  * ユーザが操作を行うためのパネル

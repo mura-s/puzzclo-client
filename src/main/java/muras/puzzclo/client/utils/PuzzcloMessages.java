@@ -1,7 +1,7 @@
 /*
  * copyright (C) 2014 Seiya Muramatsu. All rights reserved.
  */
-package muras.puzzclo.utils;
+package muras.puzzclo.client.utils;
 
 /**
  * パズクロで表示するメッセージに関するクラス

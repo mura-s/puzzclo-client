@@ -1,15 +1,14 @@
 /*
  * copyright (C) 2014 Seiya Muramatsu. All rights reserved.
  */
-package muras.puzzclo.model;
+package muras.puzzclo.client.model;
 
 import java.util.ArrayList;
 import java.util.List;
 
-import muras.puzzclo.event.ScoreChangeEvent;
-import muras.puzzclo.event.ScoreListener;
-
-import static muras.puzzclo.utils.PuzzcloMessages.*;
+import muras.puzzclo.client.event.ScoreChangeEvent;
+import muras.puzzclo.client.event.ScoreListener;
+import static muras.puzzclo.client.utils.PuzzcloMessages.*;
 
 /**
  * ゲームの現在の得点を表す。

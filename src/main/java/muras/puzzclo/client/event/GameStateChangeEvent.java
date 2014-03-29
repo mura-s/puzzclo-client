@@ -1,9 +1,9 @@
 /*
  * Copyright (C) 2014 Seiya Muramatsu. All rights reserved.
  */
-package muras.puzzclo.event;
+package muras.puzzclo.client.event;
 
-import muras.puzzclo.model.PuzzcloState.GameState;
+import muras.puzzclo.client.model.PuzzcloState.GameState;
 
 /**
  * ゲーム全体の状態変化に関するイベント

@@ -1,15 +1,14 @@
 /*
  * Copyright (C) 2014 Seiya Muramatsu. All rights reserved.
  */
-package muras.puzzclo.model;
+package muras.puzzclo.client.model;
 
 import java.util.ArrayList;
 import java.util.List;
 
-import muras.puzzclo.event.GameStateChangeEvent;
-import muras.puzzclo.event.GameStateListener;
-
-import static muras.puzzclo.utils.PuzzcloMessages.*;
+import muras.puzzclo.client.event.GameStateChangeEvent;
+import muras.puzzclo.client.event.GameStateListener;
+import static muras.puzzclo.client.utils.PuzzcloMessages.*;
 
 /**
  * アプリ全体の状態を表すクラス

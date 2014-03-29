@@ -1,14 +1,14 @@
 /*
  * Copyright (C) 2014 Seiya Muramatsu. All rights reserved.
  */
-package muras.puzzclo.model;
+package muras.puzzclo.client.model;
 
-import static muras.puzzclo.utils.ComponentSize.*;
+import static muras.puzzclo.client.utils.ComponentSize.*;
 
 import java.util.ArrayList;
 import java.util.List;
 
-import muras.puzzclo.event.PuzzleListener;
+import muras.puzzclo.client.event.PuzzleListener;
 
 /**
  * セルの選択状態を表す。

@@ -1,9 +1,9 @@
 /*
  * Copyright (C) 2014 Seiya Muramatsu. All rights reserved.
  */
-package muras.puzzclo.view;
+package muras.puzzclo.client.view;
 
-import static muras.puzzclo.utils.ComponentSize.*;
+import static muras.puzzclo.client.utils.ComponentSize.*;
 
 import java.awt.GridLayout;
 import java.awt.event.WindowAdapter;
@@ -13,9 +13,9 @@ import javax.swing.BoxLayout;
 import javax.swing.JFrame;
 import javax.swing.JPanel;
 
-import muras.puzzclo.model.PuzzcloState;
-import muras.puzzclo.model.PuzzcloState.GameState;
-import muras.puzzclo.model.TotalScore;
+import muras.puzzclo.client.model.PuzzcloState;
+import muras.puzzclo.client.model.TotalScore;
+import muras.puzzclo.client.model.PuzzcloState.GameState;
 
 /**
  * クライアントフレーム全体

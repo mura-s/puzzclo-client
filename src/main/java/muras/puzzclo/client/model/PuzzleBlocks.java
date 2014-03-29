@@ -1,14 +1,14 @@
 /*
  * Copyright (C) 2014 Seiya Muramatsu. All rights reserved.
  */
-package muras.puzzclo.model;
+package muras.puzzclo.client.model;
 
-import static muras.puzzclo.utils.ComponentSize.*;
+import static muras.puzzclo.client.utils.ComponentSize.*;
 
 import javax.swing.ImageIcon;
 import javax.swing.table.DefaultTableModel;
 
-import muras.puzzclo.utils.PuzzleBlockColor;
+import muras.puzzclo.client.utils.PuzzleBlockColor;
 
 /**
  * パズル内のブロックの配置に関するクラス。<br />
@@ -78,6 +78,8 @@ public final class PuzzleBlocks {
 	 *            入れ替え先のセルの行
 	 * @param dstCol
 	 *            入れ替え先のセルの行
+	 * @exception IndexOutOfBoundsException
+	 *                引数のセルがパズルの範囲外の場合
 	 */
 	public void swap(int srcRow, int srcCol, int dstRow, int dstCol) {
 

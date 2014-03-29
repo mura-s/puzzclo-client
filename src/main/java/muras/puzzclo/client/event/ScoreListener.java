@@ -1,7 +1,7 @@
 /*
  * Copyright (C) 2014 Seiya Muramatsu. All rights reserved.
  */
-package muras.puzzclo.event;
+package muras.puzzclo.client.event;
 
 /**
  * 得点の変化に関するObserverインタフェース
