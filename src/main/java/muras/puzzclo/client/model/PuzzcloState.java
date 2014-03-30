@@ -35,14 +35,19 @@ public final class PuzzcloState {
 		INPUT_YOUR_NAME_AS_SERVER(INPUT_YOUR_NAME_MESSAGE),
 
 		/**
-		 * 名前を入力中（接続をする側）
+		 * 名前を入力中（接続を待つ側）
 		 */
 		INPUT_YOUR_NAME_AS_CLIENT(INPUT_YOUR_NAME_MESSAGE),
 
 		/**
-		 * サーバに接続中
+		 * サーバに接続中（接続を待つ側）
 		 */
-		CONNECT_SERVER(CONNECT_SERVER_MESSAGE),
+		CONNECT_SERVER_AS_SERVER(CONNECT_SERVER_MESSAGE),
+
+		/**
+		 * サーバに接続中（接続を待つ側）
+		 */
+		CONNECT_SERVER_AS_CLIENT(CONNECT_SERVER_MESSAGE),
 
 		/**
 		 * 対戦相手接続待ち
@@ -58,17 +63,17 @@ public final class PuzzcloState {
 		 * 一人プレイ中
 		 */
 		PLAY_ONE_PERSON(GAME_START_MESSAGE),
-		
+
 		/**
 		 * 二人プレイ開始
 		 */
 		START_PLAY_TWO_PERSON(GAME_START_MESSAGE),
-		
+
 		/**
 		 * 自分のターン
 		 */
 		MY_TURN(MY_TURN_MESSAGE),
-		
+
 		/**
 		 * 相手のターン
 		 */
@@ -90,23 +95,77 @@ public final class PuzzcloState {
 
 	private String myName = "";
 
+	private List<String> opponentList;
+
+	private boolean prevPlayTwoPerson = false;
+
 	private final List<GameStateListener> listeners = new ArrayList<>();
 
 	public synchronized GameState getGameState() {
 		return gameState;
 	}
 
+	/**
+	 * ゲームの状態を設定する。 INITにする場合は、自分の名前も初期化される。
+	 * 
+	 * @param gameState
+	 *            ゲームの状態
+	 */
 	public synchronized void setGameState(GameState gameState) {
 		this.gameState = gameState;
+
+		if (gameState == GameState.INIT) {
+			prevPlayTwoPerson = (myName != null && !myName.equals(""));
+
+			myName = "";
+		}
 
 		notifyToListeners();
 	}
 
-	public synchronized void setGameState(GameState gameState, String playerName) {
+	/**
+	 * 2人対戦で、名前を設定するときに呼ぶ。
+	 * 
+	 * @param gameState
+	 *            ゲームの状態
+	 * @param myName
+	 *            自分の名前
+	 */
+	public synchronized void setGameState(GameState gameState, String myName) {
 		this.gameState = gameState;
-		this.myName = playerName;
+		this.myName = myName;
 
 		notifyToListeners();
+	}
+
+	/**
+	 * 2人対戦で、名前と対戦相手リストを設定するときに呼ぶ。
+	 * 
+	 * @param gameState
+	 *            ゲームの状態
+	 * @param myName
+	 *            自分の名前
+	 * @param opponentList
+	 *            対戦相手リスト
+	 */
+	public synchronized void setGameState(GameState gameState, String myName,
+			List<String> opponentList) {
+		this.gameState = gameState;
+		this.myName = myName;
+		this.opponentList = opponentList;
+
+		notifyToListeners();
+	}
+
+	/**
+	 * 前の対戦が二人対戦だったかどうか。
+	 */
+	public boolean isPrevPlayTwoPerson() {
+		return prevPlayTwoPerson;
+	}
+
+	public String getMyName() {
+		return myName;
 	}
 
 	public void addGameStateListener(GameStateListener listener) {
@@ -116,7 +175,7 @@ public final class PuzzcloState {
 	private void notifyToListeners() {
 		for (GameStateListener listener : listeners) {
 			listener.gameStateChanged(new GameStateChangeEvent(gameState,
-					myName, gameState.message));
+					myName, gameState.message, opponentList));
 		}
 	}
 }

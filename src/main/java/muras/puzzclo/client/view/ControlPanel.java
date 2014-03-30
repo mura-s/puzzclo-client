@@ -49,9 +49,6 @@ class ControlPanel extends JPanel implements ScoreListener, GameStateListener {
 	// ゲームの状態
 	private final PuzzcloState puzzcloState;
 
-	// WebSocketクライアント
-	private PuzzcloWebSocketClient client;
-
 	/**
 	 * コンストラクタ
 	 */
@@ -78,10 +75,28 @@ class ControlPanel extends JPanel implements ScoreListener, GameStateListener {
 	@Override
 	public void gameStateChanged(GameStateChangeEvent e) {
 		switch (e.getSource()) {
+		case INIT:
+			if (puzzcloState.isPrevPlayTwoPerson()) {
+				messagePanel.messageArea.append(DISCONNECTED_MESSAGE);
+			}
+
+			break;
+
 		case WAIT_CONNECT:
+			messagePanel.messageArea.append(getWelcomeMessage(e.getMyName()));
+
+			break;
+
 		case SELECT_OPPONENT:
-			messagePanel.messageArea
-					.append(getWelcomeMessage(e.getMyName()));
+			messagePanel.messageArea.append(getWelcomeMessage(e.getMyName()));
+
+			if (e.getOpponentList() == null || e.getOpponentList().size() == 0) {
+				messagePanel.messageArea.append(NO_OPPONENT_MESSAGE);
+				return;
+			}
+
+			messagePanel.messageArea.append(getSelectOpponentMessage(e
+					.getOpponentList()));
 
 			break;
 
@@ -192,9 +207,9 @@ class ControlPanel extends JPanel implements ScoreListener, GameStateListener {
 					BUTTON_HEIGHT));
 			return submitButton;
 		}
-		
+
 		private void createWebSocketClient() {
-			client = new PuzzcloWebSocketClient(totalScore, puzzcloState);
+			new PuzzcloWebSocketClient(totalScore, puzzcloState);
 		}
 
 		private class InputActionListener implements ActionListener {
@@ -202,7 +217,7 @@ class ControlPanel extends JPanel implements ScoreListener, GameStateListener {
 			@Override
 			public void actionPerformed(ActionEvent e) {
 				String text = inputField.getText();
-				
+
 				if (text.equals("")) {
 					return;
 				}
@@ -226,9 +241,16 @@ class ControlPanel extends JPanel implements ScoreListener, GameStateListener {
 					break;
 
 				case INPUT_YOUR_NAME_AS_SERVER:
+					createWebSocketClient();
+					puzzcloState.setGameState(
+							GameState.CONNECT_SERVER_AS_SERVER, text);
+
+					break;
+
 				case INPUT_YOUR_NAME_AS_CLIENT:
 					createWebSocketClient();
-					puzzcloState.setGameState(GameState.CONNECT_SERVER);
+					puzzcloState.setGameState(
+							GameState.CONNECT_SERVER_AS_CLIENT, text);
 
 					break;
 

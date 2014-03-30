@@ -29,6 +29,7 @@ muras/puzzclo/client/view/ControlPanel$1.class
 muras/puzzclo/client/PuzzcloClient.class
 muras/puzzclo/client/view/ClockPanel.class
 muras/puzzclo/client/event/ScoreListener.class
+muras/puzzclo/client/socket/PuzzcloSocket$1.class
 muras/puzzclo/client/view/PuzzlePanel$PuzzleDragListener$1.class
 muras/puzzclo/client/view/PuzzlePanel$PuzzleDragListener.class
 muras/puzzclo/client/view/ControlPanel$MessagePanel$1.class

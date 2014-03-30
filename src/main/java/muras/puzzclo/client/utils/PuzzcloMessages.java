@@ -3,6 +3,8 @@
  */
 package muras.puzzclo.client.utils;
 
+import java.util.List;
+
 /**
  * パズクロで表示するメッセージに関するクラス
  * 
@@ -27,18 +29,35 @@ public class PuzzcloMessages {
 	public static final String GAME_START_MESSAGE = "ゲームスタート！\n\n";
 
 	public static final String GAME_CLEAR_MESSAGE = "ゲームクリア！\n\nqを入力すると初期画面に戻ります。\n\n";
-	
+
 	public static final String MY_TURN_MESSAGE = "あなたのターンです。\n\n";
-	
+
 	public static final String OPPONENT_TURN_MESSAGE = "相手のターンです。\n\n";
-	
+
+	public static final String DISCONNECTED_MESSAGE = "切断されました。\n\n";
+
+	public static final String NO_OPPONENT_MESSAGE = "対戦相手はいませんでした。\nqを入力して初期画面に戻ってください。\n\n";
+
 	public static String getScoreMessage(int lastOneScore, int totalScore) {
 		return lastOneScore + "点獲得しました。\n現在のスコア: " + totalScore + "\n\n";
 	}
 
 	public static String getWelcomeMessage(String name) {
 		return "ようこそ " + name + "さん\n\n";
+	}
 
+	public static String getSelectOpponentMessage(List<String> opponentList) {
+
+		StringBuilder msg = new StringBuilder(
+				"----------\n接続待ちの相手一覧\n----------\n");
+
+		for (String opponentName : opponentList) {
+			msg.append(opponentName + "\n");
+		}
+
+		msg.append("\n");
+
+		return msg.toString();
 	}
 
 }

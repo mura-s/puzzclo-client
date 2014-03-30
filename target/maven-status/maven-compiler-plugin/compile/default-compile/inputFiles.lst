@@ -1,6 +1,7 @@
 /Users/muramatsu/Documents/workspace_java/puzzclo-client/src/main/java/muras/puzzclo/client/event/ScoreChangeEvent.java
 /Users/muramatsu/Documents/workspace_java/puzzclo-client/src/main/java/muras/puzzclo/client/event/GameStateChangeEvent.java
 /Users/muramatsu/Documents/workspace_java/puzzclo-client/src/main/java/muras/puzzclo/client/model/TotalScore.java
+/Users/muramatsu/Documents/workspace_java/puzzclo-client/src/main/java/muras/puzzclo/client/model/SocketMatchData.java
 /Users/muramatsu/Documents/workspace_java/puzzclo-client/src/main/java/muras/puzzclo/client/model/CellState.java
 /Users/muramatsu/Documents/workspace_java/puzzclo-client/src/main/java/muras/puzzclo/client/view/ClockPanel.java
 /Users/muramatsu/Documents/workspace_java/puzzclo-client/src/main/java/muras/puzzclo/client/utils/PuzzcloMessages.java

@@ -23,15 +23,15 @@ import org.eclipse.jetty.websocket.client.WebSocketClient;
 public class PuzzcloWebSocketClient implements GameStateListener {
 	private final String dstUri = "ws://localhost:8080/websocket/";
 
-	private final PuzzcloSocket socket = new PuzzcloSocket();
-
-	private final WebSocketClient client = new WebSocketClient();
-
 	// ゲームの得点
 	private final TotalScore totalScore;
 
 	// ゲームの状態
 	private final PuzzcloState puzzcloState;
+
+	private final PuzzcloSocket socket;
+
+	private final WebSocketClient client;
 
 	public PuzzcloWebSocketClient(TotalScore totalScore,
 			PuzzcloState puzzcloState) {
@@ -39,6 +39,10 @@ public class PuzzcloWebSocketClient implements GameStateListener {
 
 		this.puzzcloState = puzzcloState;
 		puzzcloState.addGameStateListener(this);
+
+		this.socket = new PuzzcloSocket(totalScore, puzzcloState);
+
+		this.client = new WebSocketClient();
 	}
 
 	/**
@@ -56,8 +60,8 @@ public class PuzzcloWebSocketClient implements GameStateListener {
 
 					client.connect(socket, uri, request);
 
-					// 対戦時間は最大1時間
-					socket.awaitClose(1, TimeUnit.HOURS);
+					// サーバとの接続は最大2時間
+					socket.awaitClose(2, TimeUnit.HOURS);
 
 				} catch (Exception e) {
 					e.printStackTrace();
@@ -95,7 +99,8 @@ public class PuzzcloWebSocketClient implements GameStateListener {
 
 			break;
 
-		case CONNECT_SERVER:
+		case CONNECT_SERVER_AS_SERVER:
+		case CONNECT_SERVER_AS_CLIENT:
 			connect();
 
 			break;
