@@ -22,7 +22,8 @@ public enum PuzzleBlockColor {
 	public ImageIcon getBlock() {
 		// jarにしても画像を表示できるように、ClassLoaderで読み込む
 		ClassLoader cl = this.getClass().getClassLoader();
-		return new ImageIcon(cl.getResource(name().toLowerCase() + ".png"), name());
+		return new ImageIcon(cl.getResource(name().toLowerCase() + ".png"),
+				name());
 	}
 
 	/**

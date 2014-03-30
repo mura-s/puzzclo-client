@@ -58,7 +58,7 @@ public class CellState {
 		listeners.add(listener);
 	}
 
-	public void notifyToListeners() {
+	private void notifyToListeners() {
 		for (PuzzleListener listener : listeners) {
 			listener.puzzleChanged();
 		}

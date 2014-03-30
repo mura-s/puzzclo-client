@@ -46,6 +46,9 @@ class PuzzlePanel extends JPanel implements GameStateListener {
 	// ゲームの現在の得点
 	private final TotalScore totalScore;
 
+	// ゲームの状態
+	private final PuzzcloState puzzcloState;
+
 	// パズル内のブロックとその処理
 	private final PuzzleBlocks puzzleBlocks = new PuzzleBlocks();
 
@@ -65,7 +68,8 @@ class PuzzlePanel extends JPanel implements GameStateListener {
 	 */
 	PuzzlePanel(TotalScore totalScore, PuzzcloState puzzcloState) {
 		this.totalScore = totalScore;
-		
+
+		this.puzzcloState = puzzcloState;
 		puzzcloState.addGameStateListener(this);
 
 		puzzleBlocks.createPuzzleBlocks();
@@ -103,13 +107,39 @@ class PuzzlePanel extends JPanel implements GameStateListener {
 
 	@Override
 	public void gameStateChanged(GameStateChangeEvent e) {
-		if (e.getSource() == GameState.DURING_GAME) {
-			dragEnable = true;
-			puzzleBlocks.arrangePuzzleBlocks();
-		} else {
-			dragEnable = false;
+		switch (e.getSource()) {
+		case INIT:
 			puzzleBlocks.initPuzzleBlocks();
+			dragEnable = false;
+			totalScore.initScore();
+			
+			break;
+			
+		case PLAY_ONE_PERSON:
+			puzzleBlocks.arrangePuzzleBlocks();
+			dragEnable = true;
+			
+			break;
+			
+		case START_PLAY_TWO_PERSON:
+			puzzleBlocks.arrangePuzzleBlocks();
+			
+			break;
+		
+		case MY_TURN:
+			dragEnable = true;
+			
+		case OPPONENT_TURN:
+		case GAME_CLEAR:
+			dragEnable = false;
+			
+			break;
+			
+		default:
+			// 何もしない
+			break;
 		}
+		
 	}
 
 	/**
@@ -218,7 +248,10 @@ class PuzzlePanel extends JPanel implements GameStateListener {
 					int score = puzzleBlocks.judgeCombo();
 					totalScore.addLastScore(score);
 
-					dragEnable = true;
+					if (puzzcloState.getGameState() != GameState.GAME_CLEAR) {
+						dragEnable = true;
+					}
+
 				}
 			});
 			th.start();

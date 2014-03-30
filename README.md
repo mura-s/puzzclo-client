@@ -3,4 +3,4 @@ puzzclo-client
 
 Puzzle and Clockゲームのクライアントコード。
 
-target/puzzclo-client.jarから起動します。
+target/puzzclo-client-jar-with-dependencies.jarから起動します。

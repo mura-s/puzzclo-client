@@ -7,7 +7,7 @@ package muras.puzzclo.client.event;
  * ゲーム全体の状態の変化に関するObserverインタフェース
  * 
  * @author muramatsu
- *
+ * 
  */
 public interface GameStateListener {
 

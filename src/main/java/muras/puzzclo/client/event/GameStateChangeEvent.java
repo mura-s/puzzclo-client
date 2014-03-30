@@ -15,14 +15,21 @@ public class GameStateChangeEvent {
 	private final GameState source;
 
 	private final String message;
+	
+	private final String myName;
 
-	public GameStateChangeEvent(GameState source, String message) {
+	public GameStateChangeEvent(GameState source, String myName, String message) {
 		this.source = source;
+		this.myName = myName;
 		this.message = message;
 	}
 
 	public GameState getSource() {
 		return source;
+	}
+	
+	public String getMyName() {
+		return myName;
 	}
 
 	public String getMessage() {

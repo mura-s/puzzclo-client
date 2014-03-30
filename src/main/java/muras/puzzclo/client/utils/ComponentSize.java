@@ -97,39 +97,42 @@ public class ComponentSize {
 	 */
 	private ComponentSize() {
 	}
-	
+
 	/**
 	 * x座標とy座標の位置のセルがパズルテーブル上かどうかを調べる。<br />
 	 * 最大の境界値は範囲外とする。
 	 * 
-	 * @param x x座標
-	 * @param y y座標
+	 * @param x
+	 *            x座標
+	 * @param y
+	 *            y座標
 	 * @return true: テーブル上の場合、false: テーブル外の場合
 	 */
 	public static boolean isPosOnPuzzleTable(int x, int y) {
-		if (x < 0 || PUZZLE_SIZE_LENGTH <= x ||
-				y < 0 || PUZZLE_SIZE_LENGTH <= y) {
+		if (x < 0 || PUZZLE_SIZE_LENGTH <= x || y < 0
+				|| PUZZLE_SIZE_LENGTH <= y) {
 			return false;
 		}
-		
+
 		return true;
 	}
-	
+
 	/**
-	 * rowとcolの位置のセルがパズルテーブル上かどうかを調べる。
-	 * 最大の境界値は範囲外とする。
+	 * rowとcolの位置のセルがパズルテーブル上かどうかを調べる。 最大の境界値は範囲外とする。
 	 * 
-	 * @param row 行
-	 * @param col 列
+	 * @param row
+	 *            行
+	 * @param col
+	 *            列
 	 * @return true: テーブル上の場合、false: テーブル外の場合
 	 */
 	public static boolean isCellOnPuzzleTable(int row, int col) {
-		if (row < 0 || PUZZLE_CELLNUM_OF_SIDE <= row ||
-				col < 0 || PUZZLE_CELLNUM_OF_SIDE <= col) {
+		if (row < 0 || PUZZLE_CELLNUM_OF_SIDE <= row || col < 0
+				|| PUZZLE_CELLNUM_OF_SIDE <= col) {
 			return false;
 		}
-		
+
 		return true;
 	}
-	
+
 }

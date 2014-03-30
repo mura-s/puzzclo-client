@@ -7,7 +7,7 @@ package muras.puzzclo.client.event;
  * 得点の変化に関するObserverインタフェース
  * 
  * @author muramatsu
- *
+ * 
  */
 public interface ScoreListener {
 	/**

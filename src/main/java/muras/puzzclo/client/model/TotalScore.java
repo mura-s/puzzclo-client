@@ -25,24 +25,17 @@ public final class TotalScore {
 
 	private final List<ScoreListener> listeners = new ArrayList<>();
 
-	public TotalScore() {
-		myScore = 0;
-	}
-
-	public TotalScore(int score) {
-		myScore = score;
-	}
-
-	public int getMyScore() {
+	public synchronized int getMyScore() {
 		return myScore;
 	}
-	
+
 	/**
 	 * 得点を加算して、オブザーバにnotify
 	 * 
-	 * @param score 得点
+	 * @param score
+	 *            得点
 	 */
-	public void addLastScore(int score) {
+	public synchronized void addLastScore(int score) {
 		lastOneScore = score;
 		setMyScore(myScore + score);
 	}
@@ -50,9 +43,10 @@ public final class TotalScore {
 	/**
 	 * 得点を減算して、オブザーバにnotify
 	 * 
-	 * @param score 得点
+	 * @param score
+	 *            得点
 	 */
-	public void subLastScore(int score) {
+	public synchronized void subLastScore(int score) {
 		lastOneScore = score;
 		setMyScore(myScore - score);
 	}
@@ -60,7 +54,7 @@ public final class TotalScore {
 	/**
 	 * notifyはせずに、初期化
 	 */
-	public void initScore() {
+	public synchronized void initScore() {
 		lastOneScore = 0;
 		myScore = 0;
 	}
@@ -81,7 +75,7 @@ public final class TotalScore {
 		listeners.add(listener);
 	}
 
-	public void notifyToListeners() {
+	private void notifyToListeners() {
 		for (ScoreListener listener : listeners) {
 			listener.scoreChanged(new ScoreChangeEvent(this, getScoreMessage(
 					lastOneScore, myScore)));

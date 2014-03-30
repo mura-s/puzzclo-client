@@ -16,6 +16,7 @@ muras/puzzclo/client/view/PuzzcloFrame.class
 muras/puzzclo/client/model/TotalScore.class
 muras/puzzclo/client/model/PuzzcloState$GameState.class
 muras/puzzclo/client/view/ControlPanel$MessagePanel.class
+muras/puzzclo/client/socket/PuzzcloWebSocketClient$2.class
 muras/puzzclo/client/view/ClockPanel$Clock.class
 muras/puzzclo/client/view/ClockPanel$Clock$1.class
 muras/puzzclo/client/model/CellState.class
@@ -24,8 +25,8 @@ muras/puzzclo/client/view/ControlPanel.class
 muras/puzzclo/client/utils/PuzzleBlockColor.class
 muras/puzzclo/client/event/GameStateChangeEvent.class
 muras/puzzclo/client/view/ControlPanel$InputPanel.class
+muras/puzzclo/client/view/ControlPanel$1.class
 muras/puzzclo/client/PuzzcloClient.class
-muras/puzzclo/client/view/ControlPanel$InputPanel$1.class
 muras/puzzclo/client/view/ClockPanel.class
 muras/puzzclo/client/event/ScoreListener.class
 muras/puzzclo/client/view/PuzzlePanel$PuzzleDragListener$1.class

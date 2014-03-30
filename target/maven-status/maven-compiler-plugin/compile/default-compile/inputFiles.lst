@@ -4,6 +4,8 @@
 /Users/muramatsu/Documents/workspace_java/puzzclo-client/src/main/java/muras/puzzclo/client/model/CellState.java
 /Users/muramatsu/Documents/workspace_java/puzzclo-client/src/main/java/muras/puzzclo/client/view/ClockPanel.java
 /Users/muramatsu/Documents/workspace_java/puzzclo-client/src/main/java/muras/puzzclo/client/utils/PuzzcloMessages.java
+/Users/muramatsu/Documents/workspace_java/puzzclo-client/src/main/java/muras/puzzclo/client/socket/PuzzcloWebSocketClient.java
+/Users/muramatsu/Documents/workspace_java/puzzclo-client/src/main/java/muras/puzzclo/client/socket/PuzzcloSocket.java
 /Users/muramatsu/Documents/workspace_java/puzzclo-client/src/main/java/muras/puzzclo/client/view/PuzzlePanel.java
 /Users/muramatsu/Documents/workspace_java/puzzclo-client/src/main/java/muras/puzzclo/client/utils/PuzzleBlockColor.java
 /Users/muramatsu/Documents/workspace_java/puzzclo-client/src/main/java/muras/puzzclo/client/model/PuzzleBlocks.java

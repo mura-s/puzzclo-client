@@ -7,7 +7,7 @@ package muras.puzzclo.client.event;
  * パズルの変化に関するObserverインタフェース
  * 
  * @author muramatsu
- *
+ * 
  */
 public interface PuzzleListener {
 	/**

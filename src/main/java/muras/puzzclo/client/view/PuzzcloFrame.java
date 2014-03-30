@@ -14,8 +14,8 @@ import javax.swing.JFrame;
 import javax.swing.JPanel;
 
 import muras.puzzclo.client.model.PuzzcloState;
-import muras.puzzclo.client.model.TotalScore;
 import muras.puzzclo.client.model.PuzzcloState.GameState;
+import muras.puzzclo.client.model.TotalScore;
 
 /**
  * クライアントフレーム全体
