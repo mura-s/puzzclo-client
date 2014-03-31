@@ -27,9 +27,9 @@ import muras.puzzclo.client.event.GameStateListener;
 import muras.puzzclo.client.event.PuzzleListener;
 import muras.puzzclo.client.model.CellState;
 import muras.puzzclo.client.model.PuzzcloState;
+import muras.puzzclo.client.model.PuzzcloState.GameState;
 import muras.puzzclo.client.model.PuzzleBlocks;
 import muras.puzzclo.client.model.TotalScore;
-import muras.puzzclo.client.model.PuzzcloState.GameState;
 
 /**
  * パズル部分のパネル
@@ -112,34 +112,36 @@ class PuzzlePanel extends JPanel implements GameStateListener {
 			puzzleBlocks.initPuzzleBlocks();
 			dragEnable = false;
 			totalScore.initScore();
-			
+
 			break;
-			
+
 		case PLAY_ONE_PERSON:
 			puzzleBlocks.arrangePuzzleBlocks();
 			dragEnable = true;
-			
+
 			break;
-			
+
 		case START_PLAY_TWO_PERSON:
 			puzzleBlocks.arrangePuzzleBlocks();
-			
+
 			break;
-		
+
 		case MY_TURN:
 			dragEnable = true;
-			
+
+			break;
+
 		case OPPONENT_TURN:
 		case GAME_CLEAR:
 			dragEnable = false;
-			
+
 			break;
-			
+
 		default:
 			// 何もしない
 			break;
 		}
-		
+
 	}
 
 	/**
@@ -222,9 +224,14 @@ class PuzzlePanel extends JPanel implements GameStateListener {
 			final int row = puzzleTable.rowAtPoint(e.getPoint());
 			final int col = puzzleTable.columnAtPoint(e.getPoint());
 
-			cellState.changeSelectedState(row, col);
+			boolean notSelected = (row == CellState.NOT_SELECTED_NUM && col == CellState.NOT_SELECTED_NUM);
+			if (isCellOnPuzzleTable(row, col) || notSelected) {
+				cellState.changeSelectedState(row, col);
+				deselectCellAfter4Sec();
+			} else {
+				pressed = false;
+			}
 
-			deselectCellAfter4Sec();
 		}
 
 		/**
@@ -245,11 +252,17 @@ class PuzzlePanel extends JPanel implements GameStateListener {
 					dragEnable = false;
 					pressed = false;
 
-					int score = puzzleBlocks.judgeCombo();
+					final int score = puzzleBlocks.judgeCombo();
 					totalScore.addLastScore(score);
 
-					if (puzzcloState.getGameState() != GameState.GAME_CLEAR) {
+					GameState state = puzzcloState.getGameState();
+					if ((state != GameState.GAME_CLEAR)
+							&& (state == GameState.PLAY_ONE_PERSON)) {
+						// 一人対戦のとき
 						dragEnable = true;
+					} else if (state == GameState.MY_TURN) {
+						// 二人対戦のとき
+						puzzcloState.setGameState(GameState.OPPONENT_TURN);
 					}
 
 				}

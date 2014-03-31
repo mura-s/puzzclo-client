@@ -8,7 +8,10 @@ import java.util.concurrent.TimeUnit;
 
 import muras.puzzclo.client.event.GameStateChangeEvent;
 import muras.puzzclo.client.event.GameStateListener;
+import muras.puzzclo.client.event.ScoreChangeEvent;
+import muras.puzzclo.client.event.ScoreListener;
 import muras.puzzclo.client.model.PuzzcloState;
+import muras.puzzclo.client.model.PuzzcloState.GameState;
 import muras.puzzclo.client.model.TotalScore;
 
 import org.eclipse.jetty.websocket.client.ClientUpgradeRequest;
@@ -20,11 +23,8 @@ import org.eclipse.jetty.websocket.client.WebSocketClient;
  * @author muramatsu
  * 
  */
-public class PuzzcloWebSocketClient implements GameStateListener {
+public class PuzzcloWebSocketClient implements GameStateListener, ScoreListener {
 	private final String dstUri = "ws://localhost:8080/websocket/";
-
-	// ゲームの得点
-	private final TotalScore totalScore;
 
 	// ゲームの状態
 	private final PuzzcloState puzzcloState;
@@ -35,7 +35,7 @@ public class PuzzcloWebSocketClient implements GameStateListener {
 
 	public PuzzcloWebSocketClient(TotalScore totalScore,
 			PuzzcloState puzzcloState) {
-		this.totalScore = totalScore;
+		totalScore.addScoreListener(this);
 
 		this.puzzcloState = puzzcloState;
 		puzzcloState.addGameStateListener(this);
@@ -96,19 +96,37 @@ public class PuzzcloWebSocketClient implements GameStateListener {
 		switch (e.getSource()) {
 		case INIT:
 			disconnect();
-
 			break;
 
 		case CONNECT_SERVER_AS_SERVER:
 		case CONNECT_SERVER_AS_CLIENT:
 			connect();
+			break;
 
+		case GAME_WIN:
+			socket.sendGameWin();
 			break;
 
 		default:
 			// 何もしない
 			break;
 		}
+	}
+
+	@Override
+	public void scoreChanged(ScoreChangeEvent e) {
+		if (puzzcloState.getGameState() == GameState.MY_TURN) {
+			socket.sendScore();
+		}
+	}
+
+	/**
+	 * サーバに対戦相手の名前を送信する。
+	 * 
+	 * @param opponentName
+	 */
+	public void sendOpponentName(String opponentName) {
+		socket.sendOpponentName(opponentName);
 	}
 
 }

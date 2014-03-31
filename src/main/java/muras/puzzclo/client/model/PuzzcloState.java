@@ -3,12 +3,13 @@
  */
 package muras.puzzclo.client.model;
 
+import static muras.puzzclo.client.utils.PuzzcloMessages.*;
+
 import java.util.ArrayList;
 import java.util.List;
 
 import muras.puzzclo.client.event.GameStateChangeEvent;
 import muras.puzzclo.client.event.GameStateListener;
-import static muras.puzzclo.client.utils.PuzzcloMessages.*;
 
 /**
  * アプリ全体の状態を表すクラス
@@ -82,7 +83,17 @@ public final class PuzzcloState {
 		/**
 		 * ゲームクリア後
 		 */
-		GAME_CLEAR(GAME_CLEAR_MESSAGE);
+		GAME_CLEAR(GAME_CLEAR_MESSAGE),
+		
+		/**
+		 * 勝った時
+		 */
+		GAME_WIN(WIN_MESSAGE),
+		
+		/**
+		 * 負けた時
+		 */
+		GAME_LOST(LOST_MESSAGE);
 
 		private GameState(String message) {
 			this.message = message;
@@ -96,8 +107,6 @@ public final class PuzzcloState {
 	private String myName = "";
 
 	private List<String> opponentList;
-
-	private boolean prevPlayTwoPerson = false;
 
 	private final List<GameStateListener> listeners = new ArrayList<>();
 
@@ -115,8 +124,6 @@ public final class PuzzcloState {
 		this.gameState = gameState;
 
 		if (gameState == GameState.INIT) {
-			prevPlayTwoPerson = (myName != null && !myName.equals(""));
-
 			myName = "";
 		}
 
@@ -158,10 +165,18 @@ public final class PuzzcloState {
 	}
 
 	/**
-	 * 前の対戦が二人対戦だったかどうか。
+	 * 追加のメッセージを頭につけるときに呼ぶ。
+	 * 
+	 * @param gameState
+	 *            ゲームの状態
+	 * @param message
+	 *            メッセージ
 	 */
-	public boolean isPrevPlayTwoPerson() {
-		return prevPlayTwoPerson;
+	public synchronized void setGameStateWithMessage(GameState gameState,
+			String message) {
+		this.gameState = gameState;
+
+		notifyToListenersWithMessage(message);
 	}
 
 	public String getMyName() {
@@ -176,6 +191,13 @@ public final class PuzzcloState {
 		for (GameStateListener listener : listeners) {
 			listener.gameStateChanged(new GameStateChangeEvent(gameState,
 					myName, gameState.message, opponentList));
+		}
+	}
+
+	private void notifyToListenersWithMessage(String message) {
+		for (GameStateListener listener : listeners) {
+			listener.gameStateChanged(new GameStateChangeEvent(gameState,
+					myName, message + gameState.message, opponentList));
 		}
 	}
 }

@@ -81,7 +81,7 @@ class ClockPanel extends JPanel {
 		final Font font = new Font(Font.SANS_SERIF, Font.BOLD, CLOCK_FONTSIZE);
 
 		// デフォルトの時計の色。薄いグレー。
-		final Color defaultColor = new Color(240, 240, 240);
+		final Color defaultColor = Color.LIGHT_GRAY;
 
 		// 時計の点滅
 		boolean blinkFlag = true;
@@ -131,7 +131,14 @@ class ClockPanel extends JPanel {
 				double percentScore = totalScore.getMyScore()
 						/ (double) TotalScore.MAX_SCORE;
 				int closeHeight = (int) (CLOCK_HEIGHT - (CLOCK_HEIGHT * percentScore));
-				g.fillRect(0, 0, CLOCK_WIDTH, closeHeight);
+				// 先攻か後攻かで上側から表示するか下側から表示するかを変える
+				if (totalScore.isFirst()) {
+					g.fillRect(0, (CLOCK_HEIGHT - closeHeight), CLOCK_WIDTH,
+							closeHeight);
+				} else {
+					g.fillRect(0, 0, CLOCK_WIDTH, closeHeight);
+				}
+
 			} else {
 				g.setColor(Color.RED);
 				if (blinkFlag) {

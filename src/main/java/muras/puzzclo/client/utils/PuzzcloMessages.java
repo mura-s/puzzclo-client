@@ -38,24 +38,46 @@ public class PuzzcloMessages {
 
 	public static final String NO_OPPONENT_MESSAGE = "対戦相手はいませんでした。\nqを入力して初期画面に戻ってください。\n\n";
 
+	public static final String NOT_FOUND_SEND_OPPONENT_MESSAGE = "指定した対戦相手は存在しない、もしくは対戦中でした。\n\n";
+
+	public static final String WIN_MESSAGE = "あなたの勝ちです。\n\nqを入力すると初期画面に戻ります。\n\n";
+
+	public static final String LOST_MESSAGE = "あなたの負けです。\n\nqを入力すると初期画面に戻ります。\n\n";
+
 	public static String getScoreMessage(int lastOneScore, int totalScore) {
-		return lastOneScore + "点獲得しました。\n現在のスコア: " + totalScore + "\n\n";
+		return "あなたは" + lastOneScore + "点獲得しました。\nあなたの現在のスコア: " + totalScore
+				+ "\n\n";
+	}
+
+	public static String getMyScoreMessage(int lastOneScore, int totalScore) {
+		return "あなたは" + lastOneScore + "点獲得しました。\nあなたの現在のスコア: " + totalScore
+				+ "\n対戦相手の現在のスコア: " + (100 - totalScore) + "\n\n";
+	}
+
+	public static String getOpponentScoreMessage(int lastOneScore,
+			int totalScore) {
+		return "対戦相手は" + lastOneScore + "点獲得しました。\nあなたの現在のスコア: " + totalScore
+				+ "\n対戦相手の現在のスコア: " + (100 - totalScore) + "\n\n";
 	}
 
 	public static String getWelcomeMessage(String name) {
 		return "ようこそ " + name + "さん\n\n";
 	}
 
+	public static String getVersusMessage(String myName, String opponentName) {
+		return myName + " vs " + opponentName + "\n";
+	}
+
 	public static String getSelectOpponentMessage(List<String> opponentList) {
 
 		StringBuilder msg = new StringBuilder(
-				"----------\n接続待ちの相手一覧\n----------\n");
+				"--------------------\n接続待ちの相手一覧\n--------------------\n");
 
 		for (String opponentName : opponentList) {
 			msg.append(opponentName + "\n");
 		}
 
-		msg.append("\n");
+		msg.append("--------------------\n\n");
 
 		return msg.toString();
 	}

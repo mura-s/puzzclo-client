@@ -5,7 +5,6 @@ package muras.puzzclo.client;
 
 import javax.swing.JFrame;
 
-import muras.puzzclo.client.socket.PuzzcloWebSocketClient;
 import muras.puzzclo.client.view.PuzzcloFrame;
 
 /**

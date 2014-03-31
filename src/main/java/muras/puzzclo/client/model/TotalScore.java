@@ -25,30 +25,57 @@ public final class TotalScore {
 
 	private final List<ScoreListener> listeners = new ArrayList<>();
 
-	public synchronized int getMyScore() {
+	private boolean isTwoPlay = false;
+
+	// 先攻か後攻か
+	private boolean isFirst = true;
+
+	public int getMyScore() {
 		return myScore;
 	}
 
+	public int getLastScore() {
+		return lastOneScore;
+	}
+
 	/**
-	 * 得点を加算して、オブザーバにnotify
+	 * 得点を加算して、オブザーバにnotify。一人プレイ・二人プレイともに使用。
 	 * 
 	 * @param score
 	 *            得点
 	 */
 	public synchronized void addLastScore(int score) {
 		lastOneScore = score;
-		setMyScore(myScore + score);
+		myScore += score;
+
+		if (myScore < 0) {
+			myScore = 0;
+		} else if (myScore > MAX_SCORE) {
+			myScore = MAX_SCORE;
+		}
+
+		String scoreMessage = isTwoPlay ? getMyScoreMessage(lastOneScore,
+				myScore) : getScoreMessage(lastOneScore, myScore);
+		notifyToListeners(scoreMessage);
 	}
 
 	/**
-	 * 得点を減算して、オブザーバにnotify
+	 * 得点を減算して、オブザーバにnotify。二人プレイ時に使用。
 	 * 
 	 * @param score
 	 *            得点
 	 */
 	public synchronized void subLastScore(int score) {
 		lastOneScore = score;
-		setMyScore(myScore - score);
+		myScore -= score;
+
+		if (myScore < 0) {
+			myScore = 0;
+		} else if (myScore > MAX_SCORE) {
+			myScore = MAX_SCORE;
+		}
+
+		notifyToListeners(getOpponentScoreMessage(lastOneScore, myScore));
 	}
 
 	/**
@@ -57,28 +84,31 @@ public final class TotalScore {
 	public synchronized void initScore() {
 		lastOneScore = 0;
 		myScore = 0;
+		isTwoPlay = false;
+		this.isFirst = true;
 	}
 
-	private void setMyScore(int myScore) {
-		if (myScore < 0) {
-			myScore = 0;
-		} else if (myScore > MAX_SCORE) {
-			myScore = MAX_SCORE;
-		}
+	/**
+	 * 二人プレイの時の初期化
+	 */
+	public synchronized void initScoreTwoPlay(boolean isFirst) {
+		lastOneScore = 0;
+		myScore = 50;
+		isTwoPlay = true;
+		this.isFirst = isFirst;
+	}
 
-		this.myScore = myScore;
-
-		notifyToListeners();
+	public boolean isFirst() {
+		return isFirst;
 	}
 
 	public void addScoreListener(ScoreListener listener) {
 		listeners.add(listener);
 	}
 
-	private void notifyToListeners() {
+	private void notifyToListeners(String scoreMessage) {
 		for (ScoreListener listener : listeners) {
-			listener.scoreChanged(new ScoreChangeEvent(this, getScoreMessage(
-					lastOneScore, myScore)));
+			listener.scoreChanged(new ScoreChangeEvent(this, scoreMessage));
 		}
 	}
 }

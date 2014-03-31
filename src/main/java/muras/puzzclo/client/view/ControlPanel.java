@@ -68,20 +68,17 @@ class ControlPanel extends JPanel implements ScoreListener, GameStateListener {
 		messagePanel.messageArea.append(e.getMessage());
 
 		if (e.getSource().getMyScore() == TotalScore.MAX_SCORE) {
-			puzzcloState.setGameState(GameState.GAME_CLEAR);
+			if (puzzcloState.getGameState() == GameState.PLAY_ONE_PERSON) {
+				puzzcloState.setGameState(GameState.GAME_CLEAR);
+			} else {
+				puzzcloState.setGameState(GameState.GAME_WIN);
+			}
 		}
 	}
 
 	@Override
 	public void gameStateChanged(GameStateChangeEvent e) {
 		switch (e.getSource()) {
-		case INIT:
-			if (puzzcloState.isPrevPlayTwoPerson()) {
-				messagePanel.messageArea.append(DISCONNECTED_MESSAGE);
-			}
-
-			break;
-
 		case WAIT_CONNECT:
 			messagePanel.messageArea.append(getWelcomeMessage(e.getMyName()));
 
@@ -181,6 +178,8 @@ class ControlPanel extends JPanel implements ScoreListener, GameStateListener {
 		// 決定用ボタン
 		private final JButton submitButton = createSubmitButton("send");
 
+		private PuzzcloWebSocketClient client;
+
 		/**
 		 * コンストラクタ
 		 */
@@ -209,7 +208,7 @@ class ControlPanel extends JPanel implements ScoreListener, GameStateListener {
 		}
 
 		private void createWebSocketClient() {
-			new PuzzcloWebSocketClient(totalScore, puzzcloState);
+			client = new PuzzcloWebSocketClient(totalScore, puzzcloState);
 		}
 
 		private class InputActionListener implements ActionListener {
@@ -255,7 +254,7 @@ class ControlPanel extends JPanel implements ScoreListener, GameStateListener {
 					break;
 
 				case SELECT_OPPONENT:
-
+					client.sendOpponentName(text);
 					break;
 
 				default:
