@@ -49,6 +49,9 @@ class ControlPanel extends JPanel implements ScoreListener, GameStateListener {
 	// ゲームの状態
 	private final PuzzcloState puzzcloState;
 
+	// WebSocketクライアント
+	private PuzzcloWebSocketClient client;
+
 	/**
 	 * コンストラクタ
 	 */
@@ -72,6 +75,11 @@ class ControlPanel extends JPanel implements ScoreListener, GameStateListener {
 				puzzcloState.setGameState(GameState.GAME_CLEAR);
 			} else {
 				puzzcloState.setGameState(GameState.GAME_WIN);
+				client.sendGameWin();
+			}
+		} else {
+			if (puzzcloState.getGameState() == GameState.MY_TURN) {
+				client.sendScore();
 			}
 		}
 	}
@@ -177,8 +185,6 @@ class ControlPanel extends JPanel implements ScoreListener, GameStateListener {
 		private final JTextField inputField = createInputField();
 		// 決定用ボタン
 		private final JButton submitButton = createSubmitButton("send");
-
-		private PuzzcloWebSocketClient client;
 
 		/**
 		 * コンストラクタ

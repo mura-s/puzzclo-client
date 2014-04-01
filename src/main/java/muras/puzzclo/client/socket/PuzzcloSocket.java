@@ -224,7 +224,7 @@ public class PuzzcloSocket {
 		String sendMessage = toJson(data);
 
 		try {
-			Future<Void> fut;
+			Future<Void> fut = null;
 			fut = session.getRemote().sendStringByFuture(sendMessage);
 			fut.get(10, TimeUnit.SECONDS);
 		} catch (InterruptedException e) {

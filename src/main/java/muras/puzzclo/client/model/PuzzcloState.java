@@ -6,6 +6,7 @@ package muras.puzzclo.client.model;
 import static muras.puzzclo.client.utils.PuzzcloMessages.*;
 
 import java.util.ArrayList;
+import java.util.Collections;
 import java.util.List;
 
 import muras.puzzclo.client.event.GameStateChangeEvent;
@@ -84,12 +85,12 @@ public final class PuzzcloState {
 		 * ゲームクリア後
 		 */
 		GAME_CLEAR(GAME_CLEAR_MESSAGE),
-		
+
 		/**
 		 * 勝った時
 		 */
 		GAME_WIN(WIN_MESSAGE),
-		
+
 		/**
 		 * 負けた時
 		 */
@@ -108,7 +109,7 @@ public final class PuzzcloState {
 
 	private List<String> opponentList;
 
-	private final List<GameStateListener> listeners = new ArrayList<>();
+	private final List<GameStateListener> listeners = new ArrayList<GameStateListener>();
 
 	public synchronized GameState getGameState() {
 		return gameState;
@@ -187,11 +188,16 @@ public final class PuzzcloState {
 		listeners.add(listener);
 	}
 
+	public void removeGameStateListener(GameStateListener listener) {
+		listeners.remove(listener);
+	}
+
 	private void notifyToListeners() {
 		for (GameStateListener listener : listeners) {
 			listener.gameStateChanged(new GameStateChangeEvent(gameState,
 					myName, gameState.message, opponentList));
 		}
+
 	}
 
 	private void notifyToListenersWithMessage(String message) {

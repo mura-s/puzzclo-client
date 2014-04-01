@@ -23,7 +23,7 @@ public final class TotalScore {
 
 	private int lastOneScore = 0;
 
-	private final List<ScoreListener> listeners = new ArrayList<>();
+	private final List<ScoreListener> listeners = new ArrayList<ScoreListener>();
 
 	private boolean isTwoPlay = false;
 
@@ -104,6 +104,10 @@ public final class TotalScore {
 
 	public void addScoreListener(ScoreListener listener) {
 		listeners.add(listener);
+	}
+
+	public void removeScoreListener(ScoreListener listener) {
+		listeners.remove(listener);
 	}
 
 	private void notifyToListeners(String scoreMessage) {
