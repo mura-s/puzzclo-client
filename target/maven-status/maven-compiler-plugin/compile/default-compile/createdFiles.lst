@@ -1,4 +1,6 @@
+muras/puzzclo/client/model/SocketMatchData.class
 muras/puzzclo/client/model/PuzzcloState.class
+muras/puzzclo/client/socket/PuzzcloWebSocketClient.class
 muras/puzzclo/client/utils/PuzzcloMessages.class
 muras/puzzclo/client/view/PuzzcloFrame$1.class
 muras/puzzclo/client/utils/ComponentSize.class
@@ -30,6 +32,9 @@ muras/puzzclo/client/PuzzcloClient.class
 muras/puzzclo/client/view/ClockPanel.class
 muras/puzzclo/client/event/ScoreListener.class
 muras/puzzclo/client/socket/PuzzcloSocket$1.class
+muras/puzzclo/client/socket/PuzzcloSocket.class
 muras/puzzclo/client/view/PuzzlePanel$PuzzleDragListener$1.class
 muras/puzzclo/client/view/PuzzlePanel$PuzzleDragListener.class
+muras/puzzclo/client/view/ControlPanel$InputPanel$InputActionListener.class
 muras/puzzclo/client/view/ControlPanel$MessagePanel$1.class
+muras/puzzclo/client/socket/PuzzcloWebSocketClient$1.class
