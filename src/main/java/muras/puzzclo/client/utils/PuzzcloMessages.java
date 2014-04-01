@@ -13,7 +13,7 @@ import java.util.List;
  */
 public class PuzzcloMessages {
 
-	public static final String TITLE_MESSAGE = "==========\n     パズクロ！\n==========\n\n";
+	public static final String TITLE_MESSAGE = "==========\nパズクロ！\n==========\n\n";
 
 	public static final String INIT_MESSAGE = "数字をどれか入力してください。\n" + "1. 1人プレイ"
 			+ "\n2. 2人プレイ(相手を待つ)\n3. 2人プレイ(待っている人の中から相手を選ぶ)\n\n";
@@ -33,6 +33,8 @@ public class PuzzcloMessages {
 	public static final String MY_TURN_MESSAGE = "あなたのターンです。\n\n";
 
 	public static final String OPPONENT_TURN_MESSAGE = "相手のターンです。\n\n";
+	
+	public static final String NOT_CONNECTED_MESSAGE = "接続できませんでした。\n\n";
 
 	public static final String DISCONNECTED_MESSAGE = "切断されました。\n\n";
 

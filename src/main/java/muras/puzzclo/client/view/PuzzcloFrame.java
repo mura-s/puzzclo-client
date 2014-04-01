@@ -51,6 +51,7 @@ public final class PuzzcloFrame extends JFrame {
 		setTitle(title);
 		setBounds(FRAME_XPOS, FRAME_YPOS, FRAME_WIDTH, FRAME_HEIGHT);
 		setResizable(false);
+		setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
 		getRootPane().setDefaultButton(controlPanel.getSubmitButton());
 
 		// レイアウト作成

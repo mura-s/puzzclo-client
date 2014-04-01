@@ -36,6 +36,7 @@ import org.eclipse.jetty.websocket.api.annotations.WebSocket;
  */
 @WebSocket(maxMessageSize = 64 * 1024)
 public class PuzzcloSocket {
+
 	private final CountDownLatch closeLatch;
 
 	private Session session;
