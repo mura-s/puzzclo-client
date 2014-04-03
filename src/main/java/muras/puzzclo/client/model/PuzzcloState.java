@@ -6,7 +6,6 @@ package muras.puzzclo.client.model;
 import static muras.puzzclo.client.utils.PuzzcloMessages.*;
 
 import java.util.ArrayList;
-import java.util.Collections;
 import java.util.List;
 
 import muras.puzzclo.client.event.GameStateChangeEvent;
