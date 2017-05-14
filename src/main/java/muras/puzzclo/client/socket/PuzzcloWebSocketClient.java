@@ -21,8 +21,8 @@ import org.eclipse.jetty.websocket.client.WebSocketClient;
  * 
  */
 public class PuzzcloWebSocketClient implements GameStateListener {
-	// private final String dstUri = "ws://localhost:8080/websocket/";
-	private final String dstUri = "ws://54.199.201.81:8080/websocket/";
+	// private final String dstUri = "ws://xxx.xxx.xxx.xxx:8080/websocket/";
+	private final String dstUri = "ws://localhost:8080/websocket/";
 
 	private final PuzzcloSocket socket;
 
